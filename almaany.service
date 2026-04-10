@@ -1,0 +1,15 @@
+[Unit]
+Description=Almaany OKX demo trading bot
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/path/to/almaany
+ExecStart=/path/to/almaany/venv/bin/python /path/to/almaany/main.py
+Restart=always
+RestartSec=10
+EnvironmentFile=/path/to/almaany/.env
+User=your_user_here
+
+[Install]
+WantedBy=multi-user.target
