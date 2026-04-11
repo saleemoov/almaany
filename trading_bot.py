@@ -134,9 +134,15 @@ class TradingBot:
         self.telegram.send(msg)
         # Place order (demo)
         qty = TRADE_SIZE_USD / entry_price
-        order = self.place_order(coin, qty)
-        # Alert 2: Buy Executed
-        msg2 = f"""
+        order = None
+        order_error = None
+        try:
+            order = self.place_order(coin, qty)
+        except Exception as e:
+            order_error = str(e)
+        # Alert 2: Buy Executed or Failed
+        if order:
+            msg2 = f"""
 ✅ تم تنفيذ أمر الشراء
 
 #{coin}
@@ -145,17 +151,30 @@ class TradingBot:
 🎯 TP1: ${tp1:.2f} | TP2: ${tp2:.2f} | TP3: ${tp3:.2f}
 🛑 Stop Loss: ${sl:.2f}
 ⏰ {timestamp}
-        """.strip()
-        self.telegram.send(msg2)
-        # Save trade
-        trade = {
-            'coin': coin,
-            'entry_price': entry_price,
-            'timestamp_open': datetime.utcnow().isoformat()
-        }
-        trade_id = self.db.save_trade(trade)
-        self.record_alert(coin)
-        self.open_trades = self.db.get_open_trades()
+            """.strip()
+            self.telegram.send(msg2)
+            # Save trade
+            trade = {
+                'coin': coin,
+                'entry_price': entry_price,
+                'timestamp_open': datetime.utcnow().isoformat()
+            }
+            trade_id = self.db.save_trade(trade)
+            self.record_alert(coin)
+            self.open_trades = self.db.get_open_trades()
+        else:
+            msg2 = f"""
+❌ فشل تنفيذ أمر الشراء
+
+#{coin}
+💰 سعر الدخول: ${entry_price:.2f}
+📊 الكمية: ${qty:.4f}
+🎯 TP1: ${tp1:.2f} | TP2: ${tp2:.2f} | TP3: ${tp3:.2f}
+🛑 Stop Loss: ${sl:.2f}
+⏰ {timestamp}
+سبب الفشل: {order_error if order_error else 'غير معروف'}
+            """.strip()
+            self.telegram.send(msg2)
 
     def place_order(self, coin, qty):
         try:
