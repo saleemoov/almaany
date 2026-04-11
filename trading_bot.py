@@ -1,3 +1,324 @@
+import time
+from datetime import datetime, timedelta
+import ccxt
+from apscheduler.schedulers.background import BackgroundScheduler
+from config import *
+from market_analyzer import MarketAnalyzer
+from telegram_bot import TelegramBot
+from database import TradeDatabase
+from logger import logger
+
+class TradingBot:
+    def __init__(self):
+        self.analyzer = MarketAnalyzer()
+        self.telegram = TelegramBot()
+        self.db = TradeDatabase()
+        self.scheduler = BackgroundScheduler()
+        self.last_alert_time = {}  # coin: datetime
+        self.consecutive_losses = 0
+        self.cooldown_until = None
+        self.daily_loss_usd = 0
+        self.weekly_loss_usd = 0
+        self.last_daily_reset = datetime.utcnow().date()
+        self.last_weekly_reset = datetime.utcnow().date() - timedelta(days=datetime.utcnow().weekday())
+        self.open_trades = []
+        self.exchange = ccxt.okx({
+            'apiKey': OKX_API_KEY,
+            'secret': OKX_SECRET,
+            'password': OKX_PASSWORD,
+            'enableRateLimit': True,
+            'headers': {'x-simulated-trading': '1'}
+        })
+
+    def run(self):
+        self.scheduler.add_job(self.bot_loop, 'interval', minutes=SCAN_INTERVAL_MINUTES)
+        self.scheduler.add_job(self.send_status_report, 'interval', hours=12)
+        self.scheduler.add_job(self.send_weekly_report, 'cron', day_of_week='sun', hour=8)
+        self.scheduler.start()
+        logger.info("Bot started. Running main loop...")
+        try:
+            while True:
+                self.reset_loss_counters_if_needed()
+                time.sleep(60)
+        except KeyboardInterrupt:
+            logger.info("Bot stopped by user.")
+
+    def reset_loss_counters_if_needed(self):
+        today = datetime.utcnow().date()
+        week_start = today - timedelta(days=today.weekday())
+        if today != self.last_daily_reset:
+            self.daily_loss_usd = 0
+            self.last_daily_reset = today
+        if week_start != self.last_weekly_reset:
+            self.weekly_loss_usd = 0
+            self.last_weekly_reset = week_start
+
+    def can_trade(self):
+        now = datetime.utcnow()
+        if self.cooldown_until and now < self.cooldown_until:
+            return False, f"cooldown_{self.consecutive_losses}"
+        if self.daily_loss_usd >= DAILY_LOSS_LIMIT_USD:
+            return False, "daily_limit"
+        if self.weekly_loss_usd >= WEEKLY_LOSS_LIMIT_USD:
+            return False, "weekly_limit"
+        return True, None
+
+    def can_send_alert(self, coin):
+        if coin not in self.last_alert_time:
+            return True
+        hours_passed = (datetime.utcnow() - self.last_alert_time[coin]).total_seconds() / 3600
+        return hours_passed >= ALERT_COOLDOWN_HOURS
+
+    def record_alert(self, coin):
+        self.last_alert_time[coin] = datetime.utcnow()
+
+    def reset_alert(self, coin):
+        if coin in self.last_alert_time:
+            del self.last_alert_time[coin]
+
+    def bot_loop(self):
+        can_trade, reason = self.can_trade()
+        if not can_trade:
+            logger.info(f"Trading paused: {reason}")
+            return
+        self.open_trades = self.db.get_open_trades()
+        for coin in COINS:
+            try:
+                self.process_coin(coin)
+            except Exception as e:
+                logger.error(f"Error processing {coin}: {e}")
+        self.monitor_trades()
+        self.check_emergency_drops()
+
+    def process_coin(self, coin):
+        if len(self.open_trades) >= MAX_OPEN_TRADES:
+            return
+        df_4h = self.analyzer.fetch_candles(coin, TIMEFRAME_4H, CANDLES_COUNT)
+        df_4h = self.analyzer.calculate_indicators(df_4h)
+        market_condition = self.analyzer.get_market_condition(df_4h)
+        if market_condition == 'TRENDING_DOWN':
+            return
+        if not self.can_send_alert(coin):
+            return
+        support = df_4h['low'].tail(SR_PERIOD).min()
+        df_1h = self.analyzer.fetch_candles(coin, TIMEFRAME_1H, CANDLES_COUNT)
+        df_1h = self.analyzer.calculate_indicators(df_1h)
+        score = self.analyzer.calculate_signal_score(df_1h, market_condition, support, coin)
+        if score < MIN_SIGNAL_SCORE:
+            return
+        # Entry allowed
+        entry_price = df_1h.iloc[-1]['close']
+        tp1 = entry_price * (1 + TP1_PCT)
+        tp2 = entry_price * (1 + TP2_PCT)
+        tp3 = entry_price * (1 + TP3_PCT)
+        sl = entry_price * (1 - STOP_LOSS_PCT)
+        timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+        news_good = self.analyzer.check_negative_news(coin)
+        # Alert 1: New Signal
+        news_ar = '✅ لا أخبار سلبية' if news_good else '⚠️ تحذير'
+        msg = f"""
+🎯 إشارة جديدة
+
+#{coin} | {'صاعد' if market_condition=='TRENDING_UP' else 'عرضي'}
+⭐ القوة: {score}/100
+
+💰 سعر الدخول: ${entry_price:.2f}
+🎯 TP1: ${tp1:.2f} (+2.0%)
+🎯 TP2: ${tp2:.2f} (+3.0%)
+🎯 TP3: ${tp3:.2f} (+4.5%)
+🛑 Stop Loss: ${sl:.2f} (-1.5%)
+
+📰 الأخبار: {news_ar}
+⏰ {timestamp}
+        """.strip()
+        self.telegram.send(msg)
+        # Place order (demo)
+        qty = TRADE_SIZE_USD / entry_price
+        order = self.place_order(coin, qty)
+        # Alert 2: Buy Executed
+        msg2 = f"""
+✅ تم تنفيذ أمر الشراء
+
+#{coin}
+💰 سعر الشراء: ${entry_price:.2f}
+📊 الكمية: ${qty:.4f}
+🎯 TP1: ${tp1:.2f} | TP2: ${tp2:.2f} | TP3: ${tp3:.2f}
+🛑 Stop Loss: ${sl:.2f}
+⏰ {timestamp}
+        """.strip()
+        self.telegram.send(msg2)
+        # Save trade
+        trade = {
+            'coin': coin,
+            'entry_price': entry_price,
+            'timestamp_open': datetime.utcnow().isoformat()
+        }
+        trade_id = self.db.save_trade(trade)
+        self.record_alert(coin)
+        self.open_trades = self.db.get_open_trades()
+
+    def place_order(self, coin, qty):
+        try:
+            symbol = f"{coin}/USDT"
+            order = self.exchange.create_market_buy_order(symbol, qty)
+            return order
+        except Exception as e:
+            logger.error(f"Order failed for {coin}: {e}")
+            return None
+
+    def monitor_trades(self):
+        open_trades = self.db.get_open_trades()
+        for trade in open_trades:
+            coin = trade['coin']
+            entry = trade['entry_price']
+            current = self.analyzer.get_current_price(coin)
+            if not current:
+                continue
+            # TP/SL logic
+            tp1 = entry * (1 + TP1_PCT)
+            tp2 = entry * (1 + TP2_PCT)
+            tp3 = entry * (1 + TP3_PCT)
+            sl = entry * (1 - STOP_LOSS_PCT)
+            closed = False
+            timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+            # TP1
+            if current >= tp1 and not trade.get('tp1_hit'):
+                self.db.update_trade(trade['id'], {'tp1_hit': 1})
+                msg = f"""
+🎯 تم تحقيق الهدف!
+
+#{coin}
+✅ TP1 تم الوصول
+💵 سعر البيع: ${current:.2f}
+📈 الربح: +{((current-entry)/entry)*100:.2f}%
+⏰ {timestamp}
+                """.strip()
+                self.telegram.send(msg)
+                # Move SL to entry
+                sl = entry
+            # TP2
+            if current >= tp2 and not trade.get('tp2_hit'):
+                self.db.update_trade(trade['id'], {'tp2_hit': 1})
+                msg = f"""
+🎯 تم تحقيق الهدف!
+
+#{coin}
+✅ TP2 تم الوصول
+💵 سعر البيع: ${current:.2f}
+📈 الربح: +{((current-entry)/entry)*100:.2f}%
+⏰ {timestamp}
+                """.strip()
+                self.telegram.send(msg)
+            # TP3
+            if current >= tp3 and not trade.get('tp3_hit'):
+                self.db.update_trade(trade['id'], {'tp3_hit': 1, 'result': 'WIN', 'exit_price': current, 'timestamp_close': datetime.utcnow().isoformat(), 'profit_loss_pct': ((current-entry)/entry)*100, 'profit_loss_usd': (current-entry) * (TRADE_SIZE_USD/entry)})
+                msg = f"""
+🎯 تم تحقيق الهدف!
+
+#{coin}
+✅ TP3 تم الوصول
+💵 سعر البيع: ${current:.2f}
+📈 الربح: +{((current-entry)/entry)*100:.2f}%
+⏰ {timestamp}
+                """.strip()
+                self.telegram.send(msg)
+                self.reset_alert(coin)
+                closed = True
+            # SL
+            if current <= sl and not closed:
+                self.db.update_trade(trade['id'], {'result': 'LOSS', 'exit_price': current, 'timestamp_close': datetime.utcnow().isoformat(), 'profit_loss_pct': ((current-entry)/entry)*100, 'profit_loss_usd': (current-entry) * (TRADE_SIZE_USD/entry)})
+                msg = f"""
+🛑 وقف الخسارة
+
+#{coin}
+💵 سعر البيع: ${current:.2f}
+📉 الخسارة: {abs((current-entry)/entry)*100:.2f}%
+⏰ {timestamp}
+                """.strip()
+                self.telegram.send(msg)
+                self.reset_alert(coin)
+                self.handle_loss((current-entry) * (TRADE_SIZE_USD/entry))
+
+    def handle_loss(self, loss_amount):
+        self.consecutive_losses += 1
+        self.daily_loss_usd += abs(loss_amount)
+        self.weekly_loss_usd += abs(loss_amount)
+        now = datetime.utcnow()
+        if self.consecutive_losses == 1:
+            self.cooldown_until = now + timedelta(hours=COOLDOWN_AFTER_LOSS[1])
+            self.telegram.send(f"⏸ إيقاف مؤقت للتداول\n\nالسبب: خسارة رقم 1\nمدة الانتظار: 1 ساعة\nالاستئناف: {self.cooldown_until.strftime('%Y-%m-%d %H:%M UTC')}")
+        elif self.consecutive_losses == 2:
+            self.cooldown_until = now + timedelta(hours=COOLDOWN_AFTER_LOSS[2])
+            self.telegram.send(f"⏸ إيقاف مؤقت للتداول\n\nالسبب: خسارة رقم 2\nمدة الانتظار: 4 ساعات\nالاستئناف: {self.cooldown_until.strftime('%Y-%m-%d %H:%M UTC')}")
+        elif self.consecutive_losses >= 3:
+            self.cooldown_until = now + timedelta(hours=COOLDOWN_AFTER_LOSS[3])
+            self.telegram.send(f"⏸ إيقاف مؤقت للتداول\n\nالسبب: خسارة رقم 3\nمدة الانتظار: 24 ساعة\nالاستئناف: {self.cooldown_until.strftime('%Y-%m-%d %H:%M UTC')}")
+        if self.daily_loss_usd >= DAILY_LOSS_LIMIT_USD:
+            tomorrow = (now + timedelta(days=1)).strftime('%Y-%m-%d')
+            self.telegram.send(f"⛔ تم إيقاف التداول اليومي\n\nالسبب: تجاوز حد الخسارة اليومي 5%\nالخسارة اليوم: ${self.daily_loss_usd:.2f}\nالاستئناف: غداً {tomorrow} الساعة 00:00 UTC")
+        if self.weekly_loss_usd >= WEEKLY_LOSS_LIMIT_USD:
+            next_monday = (now + timedelta(days=(7-now.weekday()))).strftime('%Y-%m-%d')
+            self.telegram.send(f"🚫 تم إيقاف التداول الأسبوعي\n\nالسبب: تجاوز حد الخسارة الأسبوعي 10%\nالخسارة هذا الأسبوع: ${self.weekly_loss_usd:.2f}\nالاستئناف: {next_monday} الساعة 00:00 UTC")
+
+    def check_emergency_drops(self):
+        for coin in COINS:
+            if self.analyzer.check_emergency_drop(coin):
+                drop_pct = EMERGENCY_DROP_PCT * 100
+                timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+                msg = f"""
+⚠️ تحذير عاجل
+
+#{coin}
+📉 هبوط مفاجئ: {drop_pct}%\nخلال آخر 60 دقيقة
+
+🔴 راجع صفقاتك فوراً
+⏰ {timestamp}
+                """.strip()
+                self.telegram.send(msg)
+
+    def send_status_report(self):
+        open_trades = self.db.get_open_trades()
+        timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+        msg = f"""
+🤖 تقرير النظام
+
+✅ البوت يعمل بشكل طبيعي
+📊 حال السوق: {len(open_trades)} صفقات مفتوحة
+🔍 إشارات منذ آخر تقرير: -
+📈 صفقات مفتوحة: {len(open_trades)}
+💸 خسارة اليوم: ${self.daily_loss_usd:.2f}
+⏰ {timestamp}
+        """.strip()
+        self.telegram.send(msg)
+
+    def send_weekly_report(self):
+        all_trades = self.db.get_all_trades()
+        week_ago = datetime.utcnow() - timedelta(days=7)
+        weekly_trades = [t for t in all_trades if t['timestamp_close'] and datetime.fromisoformat(t['timestamp_close']) > week_ago]
+        total = len(weekly_trades)
+        wins = len([t for t in weekly_trades if t['result'] == 'WIN'])
+        losses = len([t for t in weekly_trades if t['result'] == 'LOSS'])
+        win_rate = (wins/total*100) if total > 0 else 0
+        pnl = sum(t['profit_loss_usd'] or 0 for t in weekly_trades)
+        coin_pnl = {}
+        for t in weekly_trades:
+            coin_pnl[t['coin']] = coin_pnl.get(t['coin'], 0) + (t['profit_loss_usd'] or 0)
+        best = max(coin_pnl, key=coin_pnl.get) if coin_pnl else 'N/A'
+        worst = min(coin_pnl, key=coin_pnl.get) if coin_pnl else 'N/A'
+        date_range = f"{(datetime.utcnow()-timedelta(days=7)).strftime('%Y-%m-%d')} to {datetime.utcnow().strftime('%Y-%m-%d')}"
+        msg = f"""
+📊 التقرير الأسبوعي
+
+📅 {date_range}
+
+إجمالي الصفقات: {total}
+✅ ناجحة: {wins} | ❌ خاسرة: {losses}
+📊 نسبة النجاح: {win_rate:.1f}%
+💰 الربح/الخسارة: ${pnl:.2f}
+🏆 أفضل عملة: #{best}
+📉 أسوأ عملة: #{worst}
+        """.strip()
+        self.telegram.send(msg)
 import asyncio
 from datetime import datetime, timedelta
 from apscheduler.schedulers.asyncio import AsyncIOScheduler

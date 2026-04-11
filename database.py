@@ -1,69 +1,59 @@
 import sqlite3
-import json
-from datetime import datetime
-from config import DB_FILE, MAX_CONSECUTIVE_LOSSES
+import sqlite3
+from config import DB_FILE
 
 class TradeDatabase:
     def __init__(self):
-        self.db_file = DB_FILE
-        self.init_db()
+        self.conn = sqlite3.connect(DB_FILE, check_same_thread=False)
+        self.create_table()
 
-    def init_db(self):
-        with sqlite3.connect(self.db_file) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
+    def create_table(self):
+        with self.conn:
+            self.conn.execute('''
                 CREATE TABLE IF NOT EXISTS trades (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     coin TEXT,
                     entry_price REAL,
-                    quantity REAL,
-                    entry_time TEXT,
-                    tp1_price REAL,
-                    tp2_price REAL,
-                    tp3_price REAL,
-                    sl_price REAL,
-                    status TEXT,  -- open, closed
                     exit_price REAL,
-                    exit_time TEXT,
-                    pnl REAL,
-                    pnl_percentage REAL,
-                    result TEXT,  -- WIN, LOSS
-                    sold_tp1 REAL DEFAULT 0,
-                    sold_tp2 REAL DEFAULT 0,
-                    sold_tp3 REAL DEFAULT 0,
-                    order_id TEXT
+                    profit_loss_pct REAL,
+                    profit_loss_usd REAL,
+                    result TEXT,
+                    timestamp_open TEXT,
+                    timestamp_close TEXT
                 )
             ''')
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS bot_state (
-                    key TEXT PRIMARY KEY,
-                    value TEXT
-                )
-            ''')
-            conn.commit()
 
     def save_trade(self, trade):
-        with sqlite3.connect(self.db_file) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                INSERT INTO trades (coin, entry_price, quantity, entry_time, tp1_price, tp2_price, tp3_price, sl_price, order_id, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'open')
+        with self.conn:
+            cursor = self.conn.execute('''
+                INSERT INTO trades (coin, entry_price, exit_price, profit_loss_pct, profit_loss_usd, result, timestamp_open, timestamp_close)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
-                trade['coin'], trade['entry_price'], trade['quantity'], trade['entry_time'],
-                trade['tp1_price'], trade['tp2_price'], trade['tp3_price'], trade['sl_price'], trade.get('order_id', '')
+                trade['coin'], trade['entry_price'], trade.get('exit_price'), trade.get('profit_loss_pct'),
+                trade.get('profit_loss_usd'), trade.get('result'), trade['timestamp_open'], trade.get('timestamp_close')
             ))
-            conn.commit()
             return cursor.lastrowid
 
+    def get_open_trades(self):
+        with self.conn:
+            rows = self.conn.execute("SELECT * FROM trades WHERE result IS NULL").fetchall()
+            return [dict(zip([column[0] for column in self.conn.execute('PRAGMA table_info(trades)')], row)) for row in rows]
+
     def update_trade(self, trade_id, updates):
-        with sqlite3.connect(self.db_file) as conn:
-            cursor = conn.cursor()
+        with self.conn:
             set_clause = ', '.join([f"{k} = ?" for k in updates.keys()])
             values = list(updates.values()) + [trade_id]
-            cursor.execute(f'UPDATE trades SET {set_clause} WHERE id = ?', values)
-            conn.commit()
+            self.conn.execute(f"UPDATE trades SET {set_clause} WHERE id = ?", values)
 
-    def get_open_trades(self):
+    def get_all_trades(self):
+        with self.conn:
+            rows = self.conn.execute("SELECT * FROM trades").fetchall()
+            return [dict(zip([column[0] for column in self.conn.execute('PRAGMA table_info(trades)')], row)) for row in rows]
+
+    def get_consecutive_losses(self):
+        with self.conn:
+            rows = self.conn.execute("SELECT result FROM trades WHERE result IS NOT NULL ORDER BY id DESC LIMIT 3").fetchall()
+            return sum(1 for row in rows if row[0] == 'LOSS')
         with sqlite3.connect(self.db_file) as conn:
             cursor = conn.cursor()
             cursor.execute('SELECT * FROM trades WHERE status = "open"')

@@ -3,74 +3,55 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Telegram Configuration
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "your_telegram_bot_token")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "your_chat_id")
+# === FIXED COIN LIST ===
+COINS = ["BTC", "ETH", "SOL", "XRP", "BNB", "ADA", "AVAX", "DOT", "ATOM", "DOGE"]
 
-# API Tokens
-CRYPTOPANIC_API_TOKEN = os.getenv("CRYPTOPANIC_API_TOKEN", "your_cryptopanic_token")
-
-# OKX Configuration
-OKX_BASE_URL = "https://www.okx.com"
+# === API KEYS & TOKENS ===
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 OKX_API_KEY = os.getenv("OKX_API_KEY", "")
 OKX_SECRET = os.getenv("OKX_SECRET", "")
 OKX_PASSWORD = os.getenv("OKX_PASSWORD", "")
 
-# Trading Parameters
+# === TRADING PARAMETERS ===
 TRADE_SIZE_USD = 1000
 MAX_OPEN_TRADES = 3
-STOP_LOSS_PCT = 0.02
-TP1_PCT = 0.015
+STOP_LOSS_PCT = 0.015
+TP1_PCT = 0.020
 TP2_PCT = 0.030
 TP3_PCT = 0.045
 TP1_SELL_PCT = 0.40
 TP2_SELL_PCT = 0.40
 TP3_SELL_PCT = 0.20
 MIN_SIGNAL_SCORE = 75
-MAX_CONSECUTIVE_LOSSES = 3
-PAUSE_HOURS = 24
 SCAN_INTERVAL_MINUTES = 15
 EMERGENCY_DROP_PCT = 0.10
-EMERGENCY_TIMEFRAME_MINUTES = 60
+ALERT_COOLDOWN_HOURS = 6
+COINGECKO_DELAY_SECONDS = 10
+DAILY_LOSS_LIMIT_USD = 200
+WEEKLY_LOSS_LIMIT_USD = 400
+COOLDOWN_AFTER_LOSS = {1: 1, 2: 4, 3: 24}  # loss number: hours
 
-# Coin List
-COINS = ["BTC", "ETH", "SOL", "XRP", "BNB", "ADA", "AVAX", "DOT", "ATOM", "DOGE"]
-
-# Timeframes
+# === STRATEGY CONSTANTS ===
 TIMEFRAME_4H = "4H"
 TIMEFRAME_1H = "1H"
 TIMEFRAME_1M = "1m"
-
-# Candles count
 CANDLES_COUNT = 50
-
-# EMA periods
 EMA21_PERIOD = 21
 EMA50_PERIOD = 50
-
-# RSI period
 RSI_PERIOD = 14
-
-# Volume average period
 VOLUME_AVG_PERIOD = 20
-
-# Support/Resistance period
 SR_PERIOD = 20
+EMA_THRESHOLD = 0.005
+SIDEWAYS_ENTRY_THRESHOLD = 0.015
 
-# Sideways EMA threshold (for EMA21 ≈ EMA50)
-EMA_THRESHOLD = 0.005  # 0.5%
-
-# Sideways entry price threshold above support
-SIDEWAYS_ENTRY_THRESHOLD = 0.015  # 1.5%
-
-# Sideways RSI max
-SIDEWAYS_RSI_MAX = 45
-
-# News check hours
-NEWS_CHECK_HOURS = 4
-
-# Database file
+# === FILES ===
 DB_FILE = "trades.db"
-
-# Log file
 LOG_FILE = "bot.log"
+
+# === OKX ===
+OKX_BASE_URL = "https://www.okx.com"
+
+# === SERVICE ===
+SERVICE_FILE = "almaany.service"
+exit
