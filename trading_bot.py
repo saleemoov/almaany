@@ -107,7 +107,6 @@ class TradingBot:
             await self.create_trade(coin, df_1h.iloc[-1]['close'], score, condition, news_good)
             self.record_alert(coin)
             self.opportunities_since_report += 1
-[4/13/2026 12:01 AM] Saleemmajed: async def create_trade(self, coin, entry_price, score, condition, news_good):
         quantity = TRADE_SIZE_USD / entry_price
         tp1 = entry_price * (1 + TP1_PCT)
         tp2 = entry_price * (1 + TP2_PCT)
