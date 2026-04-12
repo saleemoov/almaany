@@ -8,28 +8,30 @@ from telegram_bot import TelegramBot
 from database import TradeDatabase
 from logger import logger
 
-class TradingBot:
-        def run(self):
-            """
-            Synchronous entry point for main.py compatibility. Starts the AsyncIOScheduler and main scan loop.
-            """
-            import asyncio
-            try:
-                asyncio.run(self._main_loop())
-            except KeyboardInterrupt:
-                logger.info("Bot stopped by user.")
 
-        async def _main_loop(self):
-            logger.info("Bot started. Running main loop...")
-            # Schedule jobs
-            self.scheduler.add_job(self.scan_coins, 'interval', minutes=SCAN_INTERVAL_MINUTES)
-            self.scheduler.add_job(self.send_status_report, 'interval', hours=12)
-            from apscheduler.triggers.cron import CronTrigger
-            self.scheduler.add_job(self.send_weekly_report, CronTrigger(day_of_week='sun', hour=8))
-            self.scheduler.start()
-            await self.scan_coins()
-            while True:
-                await asyncio.sleep(60)
+class TradingBot:
+    def run(self):
+        """
+        Synchronous entry point for main.py compatibility. Starts the AsyncIOScheduler and main scan loop.
+        """
+        import asyncio
+        try:
+            asyncio.run(self._main_loop())
+        except KeyboardInterrupt:
+            logger.info("Bot stopped by user.")
+
+    async def _main_loop(self):
+        logger.info("Bot started. Running main loop...")
+        # Schedule jobs
+        self.scheduler.add_job(self.scan_coins, 'interval', minutes=SCAN_INTERVAL_MINUTES)
+        self.scheduler.add_job(self.send_status_report, 'interval', hours=12)
+        from apscheduler.triggers.cron import CronTrigger
+        self.scheduler.add_job(self.send_weekly_report, CronTrigger(day_of_week='sun', hour=8))
+        self.scheduler.start()
+        await self.scan_coins()
+        while True:
+            await asyncio.sleep(60)
+
     def __init__(self):
         self.analyzer = MarketAnalyzer()
         self.telegram = TelegramBot()
