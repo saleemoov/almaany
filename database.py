@@ -22,6 +22,22 @@ class TradeDatabase:
                     timestamp_close TEXT
                 )
             ''')
+        # Ensure all required columns exist (auto-migrate)
+        required_columns = [
+            ('result', 'TEXT'),
+            ('profit_loss_pct', 'REAL'),
+            ('profit_loss_usd', 'REAL'),
+            ('timestamp_open', 'TEXT'),
+            ('timestamp_close', 'TEXT'),
+            ('exit_price', 'REAL')
+        ]
+        cur = self.conn.cursor()
+        cur.execute("PRAGMA table_info(trades)")
+        existing_cols = [row[1] for row in cur.fetchall()]
+        for col, coltype in required_columns:
+            if col not in existing_cols:
+                with self.conn:
+                    self.conn.execute(f"ALTER TABLE trades ADD COLUMN {col} {coltype}")
 
     def save_trade(self, trade):
         with self.conn:
