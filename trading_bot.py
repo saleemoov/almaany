@@ -17,7 +17,7 @@ import ccxt.async_support as ccxt
 
 
 class TradingBot:
-    def init(self):
+    def __init__(self):
         self.analyzer = MarketAnalyzer()
         self.telegram = TelegramBot()
         self.db = TradeDatabase()
