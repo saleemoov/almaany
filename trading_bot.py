@@ -111,6 +111,9 @@ class TradingBot:
     async def update_open_trades(self):
         open_trades = self.db.get_open_trades()
         for trade in open_trades:
+            if 'coin' not in trade or not trade['coin']:
+                logger.warning(f"Skipping trade with missing 'coin' key: {trade}")
+                continue
             current_price = self.analyzer.get_current_price(trade['coin'])
             if current_price is None:
                 continue
