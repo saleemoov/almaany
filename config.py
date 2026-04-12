@@ -52,6 +52,11 @@ LOG_FILE = "bot.log"
 # === OKX ===
 OKX_BASE_URL = "https://www.okx.com"
 
-# === SERVICE ===
+bot = Bot(token=TOKEN)
 SERVICE_FILE = "almaany.service"
-exit
+
+# === STRATEGY CONTROL ===
+MAX_CONSECUTIVE_LOSSES = 3
+PAUSE_HOURS = 1
+bot.send_message(chat_id=CHAT_ID, text="🚨 اختبار تنبيه من السيرفر!")
+
