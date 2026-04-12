@@ -193,7 +193,7 @@ class TradingBot:
             except Exception as e:
                 logger.error(f"Failed to close trade {trade['coin']}: {e}")
                 return
-[4/13/2026 12:01 AM] Saleemmajed: pnl = (price - trade['entry_price']) * trade['quantity']
+        pnl = (price - trade['entry_price']) * trade['quantity']
         pnl_percentage = ((price - trade['entry_price']) / trade['entry_price']) * 100
         result = 'WIN' if pnl >= 0 else 'LOSS'
         exit_time = datetime.utcnow().isoformat()
