@@ -107,39 +107,6 @@ class TradingBot:
             await self.create_trade(coin, df_1h.iloc[-1]['close'], score, condition, news_good)
             self.record_alert(coin)
             self.opportunities_since_report += 1
-        quantity = TRADE_SIZE_USD / entry_price
-        tp1 = entry_price * (1 + TP1_PCT)
-        tp2 = entry_price * (1 + TP2_PCT)
-        tp3 = entry_price * (1 + TP3_PCT)
-        sl = entry_price * (1 - STOP_LOSS_PCT)
-        entry_time = datetime.utcnow().isoformat()
-        timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
-
-        symbol = f'{coin}/USDT'
-        try:
-            order = await self.exchange.create_market_buy_order(symbol, quantity)
-            order_id = order['id']
-            logger.info(f"Placed demo buy order for {coin}: {order_id}")
-        except Exception as e:
-            logger.error(f"Failed to place demo buy order for {coin}: {e}")
-            return
-
-        trade = {
-            'coin': coin,
-            'entry_price': entry_price,
-            'quantity': quantity,
-            'entry_time': entry_time,
-            'tp1_price': tp1,
-            'tp2_price': tp2,
-            'tp3_price': tp3,
-            'sl_price': sl,
-            'order_id': order_id
-        }
-        self.db.save_trade(trade)
-        logger.info(f"Created demo trade for {coin} at {entry_price}")
-
-        await self.telegram.send_signal_alert(coin, condition, score, entry_price, tp1, tp2, tp3, sl, news_good, timestamp)
-        await self.telegram.send_buy_execution(coin, entry_price, quantity, tp1, tp2, tp3, sl, timestamp)
 
     async def update_open_trades(self):
         open_trades = self.db.get_open_trades()
