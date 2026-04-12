@@ -281,5 +281,5 @@ class TradingBot:
             coin_pnl[t['coin']] = coin_pnl.get(t['coin'], 0) + (t['pnl'] if t['pnl'] is not None else 0)
         best_coin = max(coin_pnl, key=coin_pnl.get) if coin_pnl else 'N/A'
         worst_coin = min(coin_pnl, key=coin_pnl.get) if coin_pnl else 'N/A'
-        date_range = f"{(datetime.utcnow() - timedelta(days=7)).strftime('%Y-%m-%d')} to {datetime.utcnow().strftime('%Y-%m-%d')}
+            date_range = f"{(datetime.utcnow() - timedelta(days=7)).strftime('%Y-%m-%d')} to {datetime.utcnow().strftime('%Y-%m-%d')}"
         await self.telegram.send_weekly_report(date_range, total_trades, wins, losses, win_rate, pnl, best_coin, worst_coin)
