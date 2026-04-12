@@ -9,62 +9,7 @@ from database import TradeDatabase
 from logger import logger
 
 
-class TradingBot:
-    def run(self):
-        """
-        Synchronous entry point for main.py compatibility. Starts the AsyncIOScheduler and main scan loop.
-        """
-        import asyncio
-        try:
-            asyncio.run(self._main_loop())
-        except KeyboardInterrupt:
-            logger.info("Bot stopped by user.")
 
-    async def _main_loop(self):
-        logger.info("Bot started. Running main loop...")
-        # Schedule jobs
-        self.scheduler.add_job(self.scan_coins, 'interval', minutes=SCAN_INTERVAL_MINUTES)
-        self.scheduler.add_job(self.send_status_report, 'interval', hours=12)
-        from apscheduler.triggers.cron import CronTrigger
-        self.scheduler.add_job(self.send_weekly_report, CronTrigger(day_of_week='sun', hour=8))
-        self.scheduler.start()
-        await self.scan_coins()
-        while True:
-            await asyncio.sleep(60)
-
-    def __init__(self):
-        self.analyzer = MarketAnalyzer()
-        self.telegram = TelegramBot()
-        self.db = TradeDatabase()
-        self.scheduler = BackgroundScheduler()
-        self.last_alert_time = {}  # coin: datetime
-        self.consecutive_losses = 0
-        self.cooldown_until = None
-        self.daily_loss_usd = 0
-        self.weekly_loss_usd = 0
-        self.last_daily_reset = datetime.utcnow().date()
-        self.last_weekly_reset = datetime.utcnow().date() - timedelta(days=datetime.utcnow().weekday())
-        self.open_trades = []
-        self.exchange = ccxt.okx({
-            'apiKey': OKX_API_KEY,
-            'secret': OKX_SECRET,
-            'password': OKX_PASSWORD,
-            'enableRateLimit': True,
-            'headers': {'x-simulated-trading': '1'}
-        })
-
-    def run(self):
-        self.scheduler.add_job(self.bot_loop, 'interval', minutes=SCAN_INTERVAL_MINUTES)
-        self.scheduler.add_job(self.send_status_report, 'interval', hours=12)
-        self.scheduler.add_job(self.send_weekly_report, 'cron', day_of_week='sun', hour=8)
-        self.scheduler.start()
-        logger.info("Bot started. Running main loop...")
-        try:
-            while True:
-                self.reset_loss_counters_if_needed()
-                time.sleep(60)
-        except KeyboardInterrupt:
-            logger.info("Bot stopped by user.")
 
     def reset_loss_counters_if_needed(self):
         today = datetime.utcnow().date()
