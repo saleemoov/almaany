@@ -1,0 +1,17 @@
+[Unit]
+Description=Almaany Crypto Trading Bot
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/almaany
+ExecStart=/root/almaany/venv/bin/python main.py
+Restart=always
+RestartSec=10
+StandardOutput=append:/root/almaany/bot.log
+StandardError=append:/root/almaany/bot.log
+
+[Install]
+WantedBy=multi-user.target

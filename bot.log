@@ -1,0 +1,289 @@
+2026-04-09 22:42:58 - INFO - HTTP Request: POST https://api.telegram.org/bot7961646984:AAE3VnTFDsiwZsM0Tzs6xXjvzAcUv8e0glU/sendMessage "HTTP/1.1 401 Unauthorized"
+2026-04-09 22:42:58 - ERROR - Failed to send Telegram message: Unauthorized
+2026-04-09 22:45:49 - INFO - HTTP Request: POST https://api.telegram.org/bot8555966718:AAH5mrCkFyzASL4mRNHvjvUTmTHgZdEaKEY/sendMessage "HTTP/1.1 200 OK"
+2026-04-09 22:45:49 - INFO - Telegram message sent
+2026-04-09 22:58:32 - INFO - Starting trading bot
+2026-04-09 22:58:32 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 22:58:32 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 22:58:32 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 22:58:32 - INFO - Added job "TradingBot.scan_coins" to job store "default"
+2026-04-09 22:58:32 - INFO - Added job "TradingBot.send_status_report" to job store "default"
+2026-04-09 22:58:32 - INFO - Added job "TradingBot.send_weekly_report" to job store "default"
+2026-04-09 22:58:32 - INFO - Scheduler started
+2026-04-09 22:58:32 - INFO - Scanning coins
+2026-04-09 22:58:34 - ERROR - Error checking news for XRP: 404 Client Error: Not Found for url: https://cryptopanic.com/api/v1/posts/?auth_token=your_cryptopanic_token&currencies=XRP&filter=negative
+2026-04-09 22:58:34 - ERROR - Error checking news for BNB: 404 Client Error: Not Found for url: https://cryptopanic.com/api/v1/posts/?auth_token=your_cryptopanic_token&currencies=BNB&filter=negative
+2026-04-09 22:58:35 - ERROR - Error checking news for AVAX: 404 Client Error: Not Found for url: https://cryptopanic.com/api/v1/posts/?auth_token=your_cryptopanic_token&currencies=AVAX&filter=negative
+2026-04-09 22:58:36 - ERROR - Error checking news for DOT: 404 Client Error: Not Found for url: https://cryptopanic.com/api/v1/posts/?auth_token=your_cryptopanic_token&currencies=DOT&filter=negative
+2026-04-09 22:58:37 - ERROR - Error checking news for DOGE: 404 Client Error: Not Found for url: https://cryptopanic.com/api/v1/posts/?auth_token=your_cryptopanic_token&currencies=DOGE&filter=negative
+2026-04-09 23:14:10 - INFO - Starting trading bot
+2026-04-09 23:14:10 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:14:10 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:14:10 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:14:10 - INFO - Added job "TradingBot.scan_coins" to job store "default"
+2026-04-09 23:14:10 - INFO - Added job "TradingBot.send_status_report" to job store "default"
+2026-04-09 23:14:10 - INFO - Added job "TradingBot.send_weekly_report" to job store "default"
+2026-04-09 23:14:10 - INFO - Scheduler started
+2026-04-09 23:14:10 - INFO - Scanning coins
+2026-04-09 23:21:10 - INFO - Starting trading bot
+2026-04-09 23:21:10 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:21:10 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:21:10 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:21:10 - INFO - Added job "TradingBot.scan_coins" to job store "default"
+2026-04-09 23:21:10 - INFO - Added job "TradingBot.send_status_report" to job store "default"
+2026-04-09 23:21:10 - INFO - Added job "TradingBot.send_weekly_report" to job store "default"
+2026-04-09 23:21:10 - INFO - Scheduler started
+2026-04-09 23:21:10 - INFO - Scanning coins
+2026-04-09 23:21:10 - INFO - Scanning coin: BTC
+2026-04-09 23:21:10 - INFO - Market condition for BTC: UNKNOWN
+2026-04-09 23:21:10 - INFO - Scanning coin: ETH
+2026-04-09 23:21:10 - INFO - Market condition for ETH: UNKNOWN
+2026-04-09 23:21:10 - INFO - Scanning coin: SOL
+2026-04-09 23:21:11 - INFO - Market condition for SOL: UNKNOWN
+2026-04-09 23:21:11 - INFO - Scanning coin: XRP
+2026-04-09 23:21:11 - INFO - Market condition for XRP: SIDEWAYS
+2026-04-09 23:21:11 - INFO - Signal score for XRP: 0
+2026-04-09 23:21:11 - INFO - Scanning coin: BNB
+2026-04-09 23:21:12 - INFO - Market condition for BNB: SIDEWAYS
+2026-04-09 23:21:12 - INFO - Signal score for BNB: 0
+2026-04-09 23:21:12 - INFO - Scanning coin: ADA
+2026-04-09 23:21:12 - INFO - Market condition for ADA: UNKNOWN
+2026-04-09 23:21:12 - INFO - Scanning coin: AVAX
+2026-04-09 23:21:12 - INFO - Market condition for AVAX: TRENDING_UP
+2026-04-09 23:21:13 - INFO - Signal score for AVAX: 50
+2026-04-09 23:21:13 - INFO - Scanning coin: DOT
+2026-04-09 23:21:13 - INFO - Market condition for DOT: TRENDING_UP
+2026-04-09 23:21:14 - INFO - Signal score for DOT: 25
+2026-04-09 23:21:14 - INFO - Scanning coin: ATOM
+2026-04-09 23:21:14 - INFO - Market condition for ATOM: UNKNOWN
+2026-04-09 23:21:14 - INFO - Scanning coin: DOGE
+2026-04-09 23:21:14 - INFO - Market condition for DOGE: SIDEWAYS
+2026-04-09 23:21:15 - INFO - Signal score for DOGE: 0
+2026-04-09 23:25:42 - INFO - Starting trading bot
+2026-04-09 23:25:42 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:25:42 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:25:42 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:25:42 - INFO - Added job "TradingBot.scan_coins" to job store "default"
+2026-04-09 23:25:42 - INFO - Added job "TradingBot.send_status_report" to job store "default"
+2026-04-09 23:25:42 - INFO - Added job "TradingBot.send_weekly_report" to job store "default"
+2026-04-09 23:25:42 - INFO - Scheduler started
+2026-04-09 23:25:42 - INFO - Scanning coins
+2026-04-09 23:25:42 - INFO - Scanning coin: BTC
+2026-04-09 23:25:42 - INFO - Market condition for BTC: TRENDING_UP
+2026-04-09 23:25:43 - INFO - Signal score for BTC: 75
+2026-04-09 23:25:44 - ERROR - Failed to place buy order for BTC: okx requires "password" credential
+2026-04-09 23:25:44 - INFO - Scanning coin: ETH
+2026-04-09 23:25:44 - INFO - Market condition for ETH: TRENDING_UP
+2026-04-09 23:25:44 - INFO - Signal score for ETH: 50
+2026-04-09 23:25:44 - INFO - Scanning coin: SOL
+2026-04-09 23:25:45 - INFO - Market condition for SOL: TRENDING_UP
+2026-04-09 23:25:45 - INFO - Signal score for SOL: 50
+2026-04-09 23:25:45 - INFO - Scanning coin: XRP
+2026-04-09 23:25:45 - INFO - Market condition for XRP: SIDEWAYS
+2026-04-09 23:25:46 - INFO - Signal score for XRP: 0
+2026-04-09 23:25:46 - INFO - Scanning coin: BNB
+2026-04-09 23:25:46 - INFO - Market condition for BNB: SIDEWAYS
+2026-04-09 23:25:46 - ERROR - Error checking news for BNB: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/binancecoin?localization=false&sparkline=false
+2026-04-09 23:25:46 - INFO - Signal score for BNB: 0
+2026-04-09 23:25:46 - INFO - Scanning coin: ADA
+2026-04-09 23:25:47 - INFO - Market condition for ADA: TRENDING_UP
+2026-04-09 23:25:47 - ERROR - Error checking news for ADA: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/cardano?localization=false&sparkline=false
+2026-04-09 23:25:47 - INFO - Signal score for ADA: 25
+2026-04-09 23:25:47 - INFO - Scanning coin: AVAX
+2026-04-09 23:25:47 - INFO - Market condition for AVAX: TRENDING_UP
+2026-04-09 23:25:47 - ERROR - Error checking news for AVAX: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/avalanche-2?localization=false&sparkline=false
+2026-04-09 23:25:47 - INFO - Signal score for AVAX: 75
+2026-04-09 23:25:48 - ERROR - Error checking news for AVAX: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/avalanche-2?localization=false&sparkline=false
+2026-04-09 23:25:48 - ERROR - Failed to place buy order for AVAX: okx requires "password" credential
+2026-04-09 23:25:48 - INFO - Scanning coin: DOT
+2026-04-09 23:25:48 - INFO - Market condition for DOT: TRENDING_UP
+2026-04-09 23:25:48 - ERROR - Error checking news for DOT: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/polkadot?localization=false&sparkline=false
+2026-04-09 23:25:48 - INFO - Signal score for DOT: 25
+2026-04-09 23:25:48 - INFO - Scanning coin: ATOM
+2026-04-09 23:25:48 - INFO - Market condition for ATOM: TRENDING_UP
+2026-04-09 23:25:49 - ERROR - Error checking news for ATOM: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/cosmos?localization=false&sparkline=false
+2026-04-09 23:25:49 - INFO - Signal score for ATOM: 75
+2026-04-09 23:25:49 - ERROR - Error checking news for ATOM: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/cosmos?localization=false&sparkline=false
+2026-04-09 23:25:49 - ERROR - Failed to place buy order for ATOM: okx requires "password" credential
+2026-04-09 23:25:49 - INFO - Scanning coin: DOGE
+2026-04-09 23:25:49 - INFO - Market condition for DOGE: SIDEWAYS
+2026-04-09 23:25:49 - ERROR - Error checking news for DOGE: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/dogecoin?localization=false&sparkline=false
+2026-04-09 23:25:49 - INFO - Signal score for DOGE: 0
+2026-04-09 23:28:20 - INFO - Starting trading bot
+2026-04-09 23:28:20 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:28:20 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:28:20 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:28:20 - INFO - Added job "TradingBot.scan_coins" to job store "default"
+2026-04-09 23:28:20 - INFO - Added job "TradingBot.send_status_report" to job store "default"
+2026-04-09 23:28:20 - INFO - Added job "TradingBot.send_weekly_report" to job store "default"
+2026-04-09 23:28:20 - INFO - Scheduler started
+2026-04-09 23:28:20 - INFO - Scanning coins
+2026-04-09 23:28:20 - INFO - Scanning coin: BTC
+2026-04-09 23:28:21 - INFO - Market condition for BTC: TRENDING_UP
+2026-04-09 23:28:23 - INFO - Signal score for BTC: 75
+2026-04-09 23:28:25 - INFO - PAPER TRADE SIGNAL: BTC at 71811.3, score 75, condition TRENDING_UP
+2026-04-09 23:28:25 - INFO - HTTP Request: POST https://api.telegram.org/bot8555966718:AAH5mrCkFyzASL4mRNHvjvUTmTHgZdEaKEY/sendMessage "HTTP/1.1 200 OK"
+2026-04-09 23:28:25 - INFO - Telegram message sent
+2026-04-09 23:28:25 - INFO - Scanning coin: ETH
+2026-04-09 23:28:26 - INFO - Market condition for ETH: TRENDING_UP
+2026-04-09 23:28:28 - INFO - Signal score for ETH: 50
+2026-04-09 23:28:28 - INFO - Scanning coin: SOL
+2026-04-09 23:28:28 - INFO - Market condition for SOL: TRENDING_UP
+2026-04-09 23:28:31 - INFO - Signal score for SOL: 50
+2026-04-09 23:28:31 - INFO - Scanning coin: XRP
+2026-04-09 23:28:31 - INFO - Market condition for XRP: SIDEWAYS
+2026-04-09 23:28:34 - INFO - Signal score for XRP: 0
+2026-04-09 23:28:34 - INFO - Scanning coin: BNB
+2026-04-09 23:28:34 - INFO - Market condition for BNB: SIDEWAYS
+2026-04-09 23:28:36 - ERROR - Error checking news for BNB: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/binancecoin?localization=false&sparkline=false
+2026-04-09 23:28:36 - INFO - Signal score for BNB: 0
+2026-04-09 23:28:36 - INFO - Scanning coin: ADA
+2026-04-09 23:28:36 - INFO - Market condition for ADA: TRENDING_UP
+2026-04-09 23:28:39 - ERROR - Error checking news for ADA: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/cardano?localization=false&sparkline=false
+2026-04-09 23:28:39 - INFO - Signal score for ADA: 25
+2026-04-09 23:28:39 - INFO - Scanning coin: AVAX
+2026-04-09 23:28:39 - INFO - Market condition for AVAX: TRENDING_UP
+2026-04-09 23:28:41 - ERROR - Error checking news for AVAX: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/avalanche-2?localization=false&sparkline=false
+2026-04-09 23:28:41 - INFO - Signal score for AVAX: 75
+2026-04-09 23:28:43 - ERROR - Error checking news for AVAX: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/avalanche-2?localization=false&sparkline=false
+2026-04-09 23:28:43 - INFO - PAPER TRADE SIGNAL: AVAX at 9.407, score 75, condition TRENDING_UP
+2026-04-09 23:28:43 - INFO - HTTP Request: POST https://api.telegram.org/bot8555966718:AAH5mrCkFyzASL4mRNHvjvUTmTHgZdEaKEY/sendMessage "HTTP/1.1 200 OK"
+2026-04-09 23:28:43 - INFO - Telegram message sent
+2026-04-09 23:28:43 - INFO - Scanning coin: DOT
+2026-04-09 23:28:44 - INFO - Market condition for DOT: TRENDING_UP
+2026-04-09 23:28:46 - ERROR - Error checking news for DOT: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/polkadot?localization=false&sparkline=false
+2026-04-09 23:28:46 - INFO - Signal score for DOT: 25
+2026-04-09 23:28:46 - INFO - Scanning coin: ATOM
+2026-04-09 23:28:47 - INFO - Market condition for ATOM: TRENDING_UP
+2026-04-09 23:28:49 - ERROR - Error checking news for ATOM: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/cosmos?localization=false&sparkline=false
+2026-04-09 23:28:49 - INFO - Signal score for ATOM: 75
+2026-04-09 23:35:08 - INFO - Starting trading bot
+2026-04-09 23:35:08 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:35:08 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:35:08 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:35:08 - INFO - Added job "TradingBot.scan_coins" to job store "default"
+2026-04-09 23:35:08 - INFO - Added job "TradingBot.send_status_report" to job store "default"
+2026-04-09 23:35:08 - INFO - Added job "TradingBot.send_weekly_report" to job store "default"
+2026-04-09 23:35:08 - INFO - Scheduler started
+2026-04-09 23:35:08 - INFO - Scanning coins
+2026-04-09 23:35:08 - INFO - Scanning coin: BTC
+2026-04-09 23:35:08 - INFO - Market condition for BTC: TRENDING_UP
+2026-04-09 23:35:14 - INFO - Signal score for BTC: 75
+2026-04-09 23:35:20 - ERROR - Failed to place demo buy order for BTC: okx requires "password" credential
+2026-04-09 23:35:20 - INFO - Scanning coin: ETH
+2026-04-09 23:35:20 - INFO - Market condition for ETH: TRENDING_UP
+2026-04-09 23:35:26 - INFO - Signal score for ETH: 50
+2026-04-09 23:35:26 - INFO - Scanning coin: SOL
+2026-04-09 23:35:26 - INFO - Market condition for SOL: TRENDING_UP
+2026-04-09 23:35:52 - INFO - Starting trading bot
+2026-04-09 23:35:52 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:35:52 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:35:52 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:35:52 - INFO - Added job "TradingBot.scan_coins" to job store "default"
+2026-04-09 23:35:52 - INFO - Added job "TradingBot.send_status_report" to job store "default"
+2026-04-09 23:35:52 - INFO - Added job "TradingBot.send_weekly_report" to job store "default"
+2026-04-09 23:35:52 - INFO - Scheduler started
+2026-04-09 23:35:52 - INFO - Scanning coins
+2026-04-09 23:35:52 - INFO - Scanning coin: BTC
+2026-04-09 23:35:52 - INFO - Market condition for BTC: TRENDING_UP
+2026-04-09 23:35:58 - INFO - Signal score for BTC: 75
+2026-04-09 23:36:04 - ERROR - Failed to place demo buy order for BTC: okx {"msg":"Request header OK-ACCESS-PASSPHRASE incorrect.","code":"50105"}
+2026-04-09 23:36:04 - INFO - Scanning coin: ETH
+2026-04-09 23:36:05 - INFO - Market condition for ETH: TRENDING_UP
+2026-04-09 23:36:10 - INFO - Signal score for ETH: 50
+2026-04-09 23:36:10 - INFO - Scanning coin: SOL
+2026-04-09 23:36:10 - INFO - Market condition for SOL: TRENDING_UP
+2026-04-09 23:36:16 - INFO - Signal score for SOL: 50
+2026-04-09 23:36:16 - INFO - Scanning coin: XRP
+2026-04-09 23:36:16 - INFO - Market condition for XRP: SIDEWAYS
+2026-04-09 23:36:37 - INFO - Starting trading bot
+2026-04-09 23:36:37 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:36:37 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:36:37 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:36:37 - INFO - Added job "TradingBot.scan_coins" to job store "default"
+2026-04-09 23:36:37 - INFO - Added job "TradingBot.send_status_report" to job store "default"
+2026-04-09 23:36:37 - INFO - Added job "TradingBot.send_weekly_report" to job store "default"
+2026-04-09 23:36:37 - INFO - Scheduler started
+2026-04-09 23:36:37 - INFO - Scanning coins
+2026-04-09 23:36:37 - INFO - Scanning coin: BTC
+2026-04-09 23:36:37 - INFO - Market condition for BTC: TRENDING_UP
+2026-04-09 23:36:42 - INFO - Signal score for BTC: 75
+2026-04-09 23:36:49 - ERROR - Failed to place demo buy order for BTC: okx {"msg":"Request header OK-ACCESS-PASSPHRASE incorrect.","code":"50105"}
+2026-04-09 23:36:49 - INFO - Scanning coin: ETH
+2026-04-09 23:36:49 - INFO - Market condition for ETH: TRENDING_UP
+2026-04-09 23:36:54 - ERROR - Error checking news for ETH: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/ethereum?localization=false&sparkline=false
+2026-04-09 23:36:54 - INFO - Signal score for ETH: 50
+2026-04-09 23:36:54 - INFO - Scanning coin: SOL
+2026-04-09 23:36:54 - INFO - Market condition for SOL: TRENDING_UP
+2026-04-09 23:43:20 - INFO - Starting trading bot
+2026-04-09 23:43:20 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:43:20 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:43:20 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:43:20 - INFO - Added job "TradingBot.scan_coins" to job store "default"
+2026-04-09 23:43:20 - INFO - Added job "TradingBot.send_status_report" to job store "default"
+2026-04-09 23:43:20 - INFO - Added job "TradingBot.send_weekly_report" to job store "default"
+2026-04-09 23:43:20 - INFO - Scheduler started
+2026-04-09 23:43:20 - INFO - Scanning coins
+2026-04-09 23:43:20 - INFO - Scanning coin: BTC
+2026-04-09 23:43:21 - INFO - Market condition for BTC: TRENDING_UP
+2026-04-09 23:43:26 - INFO - Signal score for BTC: 100
+2026-04-09 23:43:32 - INFO - Placed demo buy order for BTC: {'info': {'clOrdId': '6b9ad766b55dBCDE360f47052777188a', 'ordId': '3465361238473101312', 'sCode': '0', 'sMsg': 'Order placed', 'subCode': '', 'tag': '6b9ad766b55dBCDE', 'ts': '1775778212818'}, 'id': '3465361238473101312', 'clientOrderId': '6b9ad766b55dBCDE360f47052777188a', 'timestamp': None, 'datetime': None, 'lastTradeTimestamp': None, 'lastUpdateTimestamp': None, 'symbol': 'BTC/USDT', 'type': 'market', 'timeInForce': None, 'postOnly': None, 'side': 'buy', 'price': None, 'stopLossPrice': None, 'takeProfitPrice': None, 'triggerPrice': None, 'average': None, 'cost': None, 'amount': None, 'filled': None, 'remaining': None, 'status': None, 'fee': None, 'trades': [], 'reduceOnly': False, 'fees': [], 'stopPrice': None}
+2026-04-09 23:43:32 - INFO - Created demo trade for BTC at 71838.4
+2026-04-09 23:43:32 - INFO - HTTP Request: POST https://api.telegram.org/bot8555966718:AAH5mrCkFyzASL4mRNHvjvUTmTHgZdEaKEY/sendMessage "HTTP/1.1 200 OK"
+2026-04-09 23:43:32 - INFO - Telegram message sent
+2026-04-09 23:43:32 - INFO - Scanning coin: ETH
+2026-04-09 23:43:33 - INFO - Market condition for ETH: TRENDING_UP
+2026-04-09 23:43:38 - INFO - Signal score for ETH: 50
+2026-04-09 23:43:38 - INFO - Scanning coin: SOL
+2026-04-09 23:43:38 - INFO - Market condition for SOL: TRENDING_UP
+2026-04-09 23:43:44 - INFO - Signal score for SOL: 50
+2026-04-09 23:43:44 - INFO - Scanning coin: XRP
+2026-04-09 23:50:54 - INFO - Starting trading bot
+2026-04-09 23:50:54 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:50:54 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:50:54 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-09 23:50:54 - INFO - Added job "TradingBot.scan_coins" to job store "default"
+2026-04-09 23:50:54 - INFO - Added job "TradingBot.send_status_report" to job store "default"
+2026-04-09 23:50:54 - INFO - Added job "TradingBot.send_weekly_report" to job store "default"
+2026-04-09 23:50:54 - INFO - Scheduler started
+2026-04-09 23:50:54 - INFO - Scanning coins
+2026-04-09 23:50:54 - INFO - Scanning coin: BTC
+2026-04-09 23:50:54 - INFO - Market condition for BTC: TRENDING_UP
+2026-04-09 23:50:59 - INFO - Signal score for BTC: 100
+2026-04-09 23:51:06 - INFO - Placed demo buy order for BTC: {'info': {'clOrdId': '6b9ad766b55dBCDE158b23b98495bc4f', 'ordId': '3465376453226975232', 'sCode': '0', 'sMsg': 'Order placed', 'subCode': '', 'tag': '6b9ad766b55dBCDE', 'ts': '1775778666253'}, 'id': '3465376453226975232', 'clientOrderId': '6b9ad766b55dBCDE158b23b98495bc4f', 'timestamp': None, 'datetime': None, 'lastTradeTimestamp': None, 'lastUpdateTimestamp': None, 'symbol': 'BTC/USDT', 'type': 'market', 'timeInForce': None, 'postOnly': None, 'side': 'buy', 'price': None, 'stopLossPrice': None, 'takeProfitPrice': None, 'triggerPrice': None, 'average': None, 'cost': None, 'amount': None, 'filled': None, 'remaining': None, 'status': None, 'fee': None, 'trades': [], 'reduceOnly': False, 'fees': [], 'stopPrice': None}
+2026-04-09 23:51:06 - INFO - Created demo trade for BTC at 71790.5
+2026-04-09 23:51:06 - INFO - HTTP Request: POST https://api.telegram.org/bot8555966718:AAH5mrCkFyzASL4mRNHvjvUTmTHgZdEaKEY/sendMessage "HTTP/1.1 200 OK"
+2026-04-09 23:51:06 - INFO - Telegram message sent
+2026-04-09 23:51:06 - INFO - HTTP Request: POST https://api.telegram.org/bot8555966718:AAH5mrCkFyzASL4mRNHvjvUTmTHgZdEaKEY/sendMessage "HTTP/1.1 200 OK"
+2026-04-09 23:51:06 - INFO - Telegram message sent
+2026-04-09 23:51:06 - INFO - Scanning coin: ETH
+2026-04-09 23:51:06 - INFO - Market condition for ETH: TRENDING_UP
+2026-04-09 23:51:11 - INFO - Signal score for ETH: 50
+2026-04-09 23:51:11 - INFO - Scanning coin: SOL
+2026-04-09 23:51:12 - INFO - Market condition for SOL: TRENDING_UP
+2026-04-09 23:51:17 - INFO - Signal score for SOL: 50
+2026-04-09 23:51:17 - INFO - Scanning coin: XRP
+2026-04-09 23:51:17 - INFO - Market condition for XRP: SIDEWAYS
+2026-04-10 01:20:27 - INFO - Starting trading bot
+2026-04-10 01:20:27 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-10 01:20:27 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-10 01:20:27 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-10 01:20:27 - INFO - Added job "TradingBot.scan_coins" to job store "default"
+2026-04-10 01:20:27 - INFO - Added job "TradingBot.send_status_report" to job store "default"
+2026-04-10 01:20:27 - INFO - Added job "TradingBot.send_weekly_report" to job store "default"
+2026-04-10 01:20:27 - INFO - Scheduler started
+2026-04-10 01:20:27 - INFO - Scanning coins
+2026-04-10 01:20:27 - INFO - Scanning coin: BTC
+2026-04-10 01:20:28 - INFO - Market condition for BTC: TRENDING_UP
+2026-04-10 01:20:33 - INFO - Signal score for BTC: 50
+2026-04-10 01:20:33 - INFO - Scanning coin: ETH
+2026-04-10 01:20:33 - INFO - Market condition for ETH: TRENDING_UP
+2026-04-10 01:20:39 - INFO - Signal score for ETH: 50
+2026-04-10 01:20:39 - INFO - Scanning coin: SOL
+2026-04-10 01:20:39 - INFO - Market condition for SOL: TRENDING_UP
+2026-04-10 01:20:44 - INFO - Signal score for SOL: 50
+2026-04-10 01:20:44 - INFO - Scanning coin: XRP
+2026-04-10 01:20:45 - INFO - Market condition for XRP: SIDEWAYS
+2026-04-10 01:20:50 - INFO - Signal score for XRP: 0
+2026-04-10 01:20:50 - INFO - Scanning coin: BNB
+2026-04-10 01:20:50 - INFO - Market condition for BNB: SIDEWAYS

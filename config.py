@@ -1,0 +1,59 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Telegram
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
+# OKX
+OKX_API_KEY = os.getenv("OKX_API_KEY")
+OKX_SECRET = os.getenv("OKX_SECRET")
+OKX_PASSWORD = os.getenv("OKX_PASSPHRASE")
+
+# Coins
+COINS = ["BTC", "ETH", "SOL", "XRP", "BNB", "ADA", "AVAX", "DOT", "ATOM", "DOGE"]
+
+# Timeframes
+TREND_TIMEFRAME = "2h"
+ENTRY_TIMEFRAME = "30m"
+
+# Trade settings
+TRADE_SIZE_USD = 1000
+MAX_OPEN_TRADES = 3
+STOP_LOSS_PCT = 0.020
+TP1_PCT = 0.025
+TP2_PCT = 0.035
+TP3_PCT = 0.045
+TP1_SELL_PCT = 0.50
+TP2_SELL_PCT = 0.30
+TP3_SELL_PCT = 0.20
+
+# Signal settings
+MIN_SIGNAL_SCORE = 75
+SCAN_INTERVAL_MINUTES = 15
+
+# RSI settings
+RSI_UP_MIN = 45
+RSI_UP_MAX = 65
+RSI_SIDEWAYS_MIN = 40
+RSI_SIDEWAYS_MAX = 55
+
+# ADX settings
+ADX_STRONG = 25
+ADX_WEAK = 20
+
+# Volume settings
+MAX_VOLUME_SPIKE = 3.0
+SR_PERIOD = 20
+SIDEWAYS_ENTRY_THRESHOLD = 0.015
+
+# Protection
+EMERGENCY_DROP_PCT = 0.10
+ALERT_COOLDOWN_HOURS = 6
+
+# Loss limits
+DAILY_LOSS_LIMIT_USD = 200
+WEEKLY_LOSS_LIMIT_USD = 400
+COOLDOWN_AFTER_LOSS = {1: 1, 2: 4, 3: 24}
