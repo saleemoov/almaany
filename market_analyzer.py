@@ -98,9 +98,6 @@ class MarketAnalyzer:
             score += 25
         elif market_condition == 'SIDEWAYS' and 35 <= rsi <= 50:
             score += 25
-        # Volume strong
-        if volume > volume_avg:
-            score += 25
         # Volume confirmation (replace news)
         volume_ratio = volume / volume_avg if volume_avg else 0
         if volume_ratio >= 1.5:
@@ -108,7 +105,7 @@ class MarketAnalyzer:
         # Special for sideways: entry only if price within 1.5% above support
         if market_condition == 'SIDEWAYS':
             if not (current_price <= support * (1 + SIDEWAYS_ENTRY_THRESHOLD)):
-                score = 0
+                return 0
         return score
 
 
