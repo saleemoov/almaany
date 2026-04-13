@@ -98,9 +98,12 @@ class MarketAnalyzer:
             score += 25
         elif market_condition == 'SIDEWAYS' and 35 <= rsi <= 50:
             score += 25
-        # Volume confirmation (replace news)
+        # Volume confirmation
         volume_ratio = volume / volume_avg if volume_avg else 0
         if volume_ratio >= 1.5:
+            score += 25
+        # Bullish candle pattern
+        if last['close'] > last['open']:
             score += 25
         # Special for sideways: entry only if price within 1.5% above support
         if market_condition == 'SIDEWAYS':
