@@ -101,8 +101,9 @@ class MarketAnalyzer:
         # Volume strong
         if volume > volume_avg:
             score += 25
-        # No bad news
-        if self.check_negative_news(coin):
+        # Volume confirmation (replace news)
+        volume_ratio = volume / volume_avg if volume_avg else 0
+        if volume_ratio >= 1.5:
             score += 25
         # Special for sideways: entry only if price within 1.5% above support
         if market_condition == 'SIDEWAYS':
@@ -110,35 +111,6 @@ class MarketAnalyzer:
                 score = 0
         return score
 
-    def check_negative_news(self, coin):
-        coin_map = {
-            'BTC': 'bitcoin', 'ETH': 'ethereum', 'SOL': 'solana',
-            'XRP': 'ripple', 'BNB': 'binancecoin', 'ADA': 'cardano',
-            'AVAX': 'avalanche-2', 'DOT': 'polkadot', 'ATOM': 'cosmos',
-            'DOGE': 'dogecoin'
-        }
-        coin_id = coin_map.get(coin)
-        if not coin_id:
-            return True
-        now = datetime.utcnow()
-        last_check = self.last_news_check.get(coin, None)
-        if last_check and (now - last_check).total_seconds() < COINGECKO_DELAY_SECONDS:
-            return True
-        url = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
-        params = {'localization': 'false', 'sparkline': 'false'}
-        def _call():
-            resp = requests.get(url, params=params, timeout=10)
-            resp.raise_for_status()
-            data = resp.json()
-            change_24h = data['market_data']['price_change_percentage_24h']
-            sentiment = data.get('sentiment_votes_down_percentage', 0)
-            if change_24h < -5 or sentiment > 60:
-                return False
-            return True
-        result = api_call_with_retry(_call)
-        self.last_news_check[coin] = datetime.utcnow()
-        time.sleep(COINGECKO_DELAY_SECONDS)
-        return result if result is not None else True
 
     def get_current_price(self, coin):
         url = f"{self.base_url}/api/v5/market/ticker"
