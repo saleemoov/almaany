@@ -174,6 +174,11 @@ def main():
     log.info("Bot starting — initializing DB")
     db.init_db()
 
+    try:
+        tg.send_message("✅ تم تشغيل Almaany Bot بنجاح. سيتم بدء الفحص الآن.")
+    except Exception as e:
+        log.error(f"Startup Telegram heartbeat failed: {e}")
+
     scheduler = BackgroundScheduler(timezone="UTC")
 
     # Scan every 15 minutes
@@ -206,6 +211,12 @@ def main():
 
     # Run one scan immediately
     scan_coins()
+
+    # Send one immediate status report on startup for quick health verification.
+    try:
+        send_status_report()
+    except Exception as e:
+        log.error(f"Immediate startup status report failed: {e}")
 
     try:
         while True:
