@@ -13,7 +13,11 @@ OKX_SECRET = os.getenv("OKX_SECRET")
 OKX_PASSWORD = os.getenv("OKX_PASSPHRASE")
 
 # Coins
-COINS = ["BTC", "ETH", "SOL", "XRP", "BNB", "ADA", "AVAX", "DOT", "ATOM", "DOGE"]
+COINS = [
+	"BTC", "ETH", "SOL", "XRP", "ADA", "AVAX",
+	"DOT", "ATOM", "DOGE", "TRX", "LTC", "NEAR", "OP",
+	"ARB", "SUI", "TON", "WLD", "INJ", "TIA"
+]
 
 # Timeframes
 TREND_TIMEFRAME = "2h"
@@ -21,7 +25,7 @@ ENTRY_TIMEFRAME = "30m"
 
 # Trade settings
 TRADE_SIZE_USD = 1000
-MAX_OPEN_TRADES = 3
+MAX_OPEN_TRADES = 5
 STOP_LOSS_PCT = 0.020
 TP1_PCT = 0.025
 TP2_PCT = 0.035
@@ -41,8 +45,8 @@ RSI_SIDEWAYS_MIN = 40
 RSI_SIDEWAYS_MAX = 55
 
 # ADX settings
-ADX_STRONG = 25
-ADX_WEAK = 20
+ADX_STRONG = 20  # بدلاً من 25
+ADX_WEAK = 15    # بدلاً من 20
 
 # Volume settings
 MAX_VOLUME_SPIKE = 3.0
