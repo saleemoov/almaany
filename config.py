@@ -45,8 +45,8 @@ RSI_SIDEWAYS_MIN = 40
 RSI_SIDEWAYS_MAX = 55
 
 # ADX settings
-ADX_STRONG = 20  # بدلاً من 25
-ADX_WEAK = 15    # بدلاً من 20
+ADX_STRONG = 20
+ADX_WEAK = 15
 
 # Volume settings
 MAX_VOLUME_SPIKE = 3.0
