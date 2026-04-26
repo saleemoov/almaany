@@ -38,7 +38,13 @@ def main():
         # Schedule daily/weekly/monthly reports
         schedule.every().day.at("00:00").do(reports.send_daily_report)
         schedule.every().sunday.at("00:00").do(reports.send_weekly_report)
-        schedule.every(1).months.at("00:00").do(reports.send_monthly_report)
+
+        def monthly_report_wrapper():
+            from datetime import datetime
+            if datetime.now().day == 1:
+                reports.send_monthly_report()
+        schedule.every().day.at("00:00").do(monthly_report_wrapper)
+
         # Schedule health check
         schedule.every(5).minutes.do(strategy.health_check)
 
