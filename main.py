@@ -1,8 +1,4 @@
 # ELITE V9 Spot Trading Bot - Entry Point
-# Author: saleemoov
-# Version: 9.0
-# Description: Modular, production-ready OKX spot trading bot (Demo only)
-
 from config import load_config
 from telegram_bot import TelegramBot
 from okx_client import OKXClient
@@ -17,14 +13,13 @@ import sys
 
 logger = get_logger("main")
 
-
 def main():
     try:
         init_db()
         config = load_config()
         telegram = TelegramBot(config)
         okx = OKXClient(config)
-        db = __import__('database')  # dynamic import for db helpers
+        db = __import__('database')
         config['db'] = db
         risk = RiskManager(config, db, telegram)
         strategy = EliteV9Strategy(config, okx, db, risk, telegram)
@@ -33,9 +28,7 @@ def main():
         telegram.send_startup_alert()
         logger.info("ELITE V9 Bot started.")
 
-        # Schedule main trading loop every 30 min (on candle close)
         schedule.every(30).minutes.at(":00").do(strategy.run)
-        # Schedule daily/weekly/monthly reports
         schedule.every().day.at("00:00").do(reports.send_daily_report)
         schedule.every().sunday.at("00:00").do(reports.send_weekly_report)
 
@@ -44,8 +37,6 @@ def main():
             if datetime.now().day == 1:
                 reports.send_monthly_report()
         schedule.every().day.at("00:00").do(monthly_report_wrapper)
-
-        # Schedule health check
         schedule.every(5).minutes.do(strategy.health_check)
 
         while True:

@@ -9,9 +9,6 @@ load_dotenv()
 DB_PATH = os.getenv('DB_PATH', os.path.join(os.path.dirname(__file__), 'data', 'elite_v9.db'))
 
 class TelegramBot:
-    """
-    Handles all Telegram alerts and commands for ELITE V9.
-    """
     def __init__(self, config):
         self.config = config
         self.logger = get_logger("telegram")
