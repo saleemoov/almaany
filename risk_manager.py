@@ -38,7 +38,7 @@ class RiskManager:
         # Market state rules
         if market_state == 'BULL' and confidence >= self.config['MIN_CONFIDENCE']:
             return True
-        if market_state in ('SIDEWAYS', 'BEAR') and confidence >= 95 and is_bottom:
+        if market_state in ('SIDEWAYS', 'BEAR') and confidence >= 80 and is_bottom:
             return True
         return False
 
