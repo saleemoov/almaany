@@ -53,7 +53,7 @@ class EliteV9Strategy:
             if not self.risk.can_trade(coin, confidence, is_bottom, market_state):
                 continue
             # 5. Entry logic
-            if confidence >= self.min_confidence and is_bottom:
+            if confidence >= self.min_confidence:
                 # Place order (demo)
                 entry_price = df['close'].iloc[-1]
                 qty = self.okx.round_quantity(symbol, self.position_size / entry_price)

@@ -12,24 +12,29 @@ class ReportManager:
         self.telegram = telegram
 
     def send_daily_report(self):
-        # Fetch stats from db, format, and send via Telegram
+        import asyncio
         stats = self.db.get_daily_stats(datetime.utcnow().date())
         msg = self._format_daily(stats)
-        self.telegram._send(msg)
+        asyncio.run(self.telegram._send(msg))
 
     def send_weekly_report(self):
+        import asyncio
         stats = self.db.get_weekly_stats()
         msg = self._format_weekly(stats)
-        self.telegram._send(msg)
+        asyncio.run(self.telegram._send(msg))
 
     def send_monthly_report(self):
+        import asyncio
         stats = self.db.get_monthly_stats()
         msg = self._format_monthly(stats)
-        self.telegram._send(msg)
+        asyncio.run(self.telegram._send(msg))
 
     def _format_daily(self, stats: dict) -> str:
-        # Format daily report (to be implemented)
-        return f"📊 DAILY REPORT\n{stats}"
+        trades = stats.get('total_trades', 0)
+        wins = stats.get('winning_trades', 0)
+        pnl = stats.get('net_profit_usd', 0)
+        wr = round(wins / trades * 100, 1) if trades else 0
+        return f"📊 DAILY REPORT - {datetime.utcnow().strftime('%Y-%m-%d')}\n🔢 Trades: {trades}\n✅ Wins: {wins} ({wr}%)\n💰 PnL: ${pnl:.2f}"
 
     def _format_weekly(self, stats: dict) -> str:
         return f"📊 WEEKLY REPORT\n{stats}"

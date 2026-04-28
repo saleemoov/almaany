@@ -109,4 +109,39 @@ def insert_trade(trade: Dict[str, Any]) -> int:
         conn.commit()
         return cursor.lastrowid
 
-# Add more CRUD and stats methods as needed for the bot
+def get_daily_stats(date) -> dict:
+    sql = '''SELECT COUNT(*) as total_trades,
+                    SUM(CASE WHEN net_profit_usd > 0 THEN 1 ELSE 0 END) as winning_trades,
+                    SUM(CASE WHEN net_profit_usd <= 0 THEN 1 ELSE 0 END) as losing_trades,
+                    COALESCE(SUM(net_profit_usd), 0) as net_profit_usd
+             FROM trades WHERE DATE(entry_time) = ?'''
+    with get_connection() as conn:
+        row = conn.execute(sql, (str(date),)).fetchone()
+        return dict(row) if row else {}
+
+def get_weekly_stats() -> dict:
+    sql = '''SELECT COUNT(*) as total_trades,
+                    SUM(CASE WHEN net_profit_usd > 0 THEN 1 ELSE 0 END) as winning_trades,
+                    COALESCE(SUM(net_profit_usd), 0) as net_profit_usd
+             FROM trades WHERE entry_time >= DATE('now', '-7 days')'''
+    with get_connection() as conn:
+        row = conn.execute(sql).fetchone()
+        return dict(row) if row else {}
+
+def get_monthly_stats() -> dict:
+    sql = '''SELECT COUNT(*) as total_trades,
+                    SUM(CASE WHEN net_profit_usd > 0 THEN 1 ELSE 0 END) as winning_trades,
+                    COALESCE(SUM(net_profit_usd), 0) as net_profit_usd
+             FROM trades WHERE entry_time >= DATE('now', '-30 days')'''
+    with get_connection() as conn:
+        row = conn.execute(sql).fetchone()
+        return dict(row) if row else {}
+
+def get_consecutive_losses(coin: str) -> int:
+    sql = '''SELECT COUNT(*) as cnt FROM (
+                SELECT net_profit_usd FROM trades
+                WHERE coin = ? ORDER BY entry_time DESC LIMIT 3
+             ) WHERE net_profit_usd < 0'''
+    with get_connection() as conn:
+        row = conn.execute(sql, (coin,)).fetchone()
+        return row['cnt'] if row else 0
