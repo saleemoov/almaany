@@ -16,7 +16,7 @@ class TelegramBot:
         self.chat_id = config['TELEGRAM_CHAT_ID']
 
     def send_startup_alert(self):
-        msg = "🤖 ELITE V9 BOT STARTING\n✅ OKX: Connected (Demo Mode)\n✅ Telegram: Connected\n✅ Watchlist: 14 coins\n⏰ Status: RUNNING"
+        msg = "🤖 ELITE V9 BOT STARTING\n✅ OKX: Connected (Demo Mode)\n✅ Telegram: Connected\n✅ Watchlist: 25 coins\n⏰ Status: RUNNING"
         import asyncio
         asyncio.run(self._send(msg))
 
@@ -47,6 +47,30 @@ class TelegramBot:
 
     def send_emergency_stop(self, capital, loss_pct):
         msg = f"🛑🛑🛑 EMERGENCY STOP 🛑🛑🛑\n⚠️ Daily loss limit reached: {loss_pct:.2f}%\n💰 Capital: ${capital}\n⏸️ Bot paused for 24 hours"
+        import asyncio
+        asyncio.run(self._send(msg))
+
+    def send_heartbeat(self, scan_summary: dict):
+        """Sent every 6 hours: confirms bot is alive + market overview."""
+        from datetime import datetime
+        now = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+        bull   = scan_summary.get('bull', 0)
+        bear   = scan_summary.get('bear', 0)
+        side   = scan_summary.get('sideways', 0)
+        best   = scan_summary.get('best_coin', '-')
+        best_c = scan_summary.get('best_confidence', 0)
+        scanned = scan_summary.get('total_scanned', 0)
+        msg = (
+            f"💓 ELITE V9 — HEARTBEAT\n"
+            f"✅ Bot is running normally\n"
+            f"⏰ Time: {now}\n"
+            f"━━━━━━━━━━━━━━━━━━━━\n"
+            f"📊 MARKET OVERVIEW ({scanned} coins)\n"
+            f"🐂 Bull: {bull} | 🐻 Bear: {bear} | ↔️ Sideways: {side}\n"
+            f"🏆 Best signal: {best} ({best_c}/100)\n"
+            f"━━━━━━━━━━━━━━━━━━━━\n"
+            f"⚙️ Mode: Demo | 🔒 OKX Connected"
+        )
         import asyncio
         asyncio.run(self._send(msg))
 

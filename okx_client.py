@@ -1,6 +1,7 @@
 # okx_client.py - OKX API wrapper for ELITE V9
 import ccxt
 import time
+import math
 from typing import Any, Dict, Optional
 from logger import get_logger
 
@@ -68,9 +69,17 @@ class OKXClient:
             return 0.0
 
     def round_quantity(self, symbol: str, qty: float) -> float:
-        # Rounds to OKX min precision for the symbol
-        decimals = self.precision.get(symbol, 8)
-        return float(f"{qty:.{decimals}f}")
+        # Rounds to OKX min precision for the symbol.
+        # OKX returns precision as float e.g. 1e-08, so we convert to decimal places.
+        prec = self.precision.get(symbol, 1e-8)
+        try:
+            if prec and float(prec) < 1:
+                decimals = max(0, int(round(-math.log10(float(prec)))))
+            else:
+                decimals = int(prec) if prec else 8
+        except Exception:
+            decimals = 8
+        return round(qty, decimals)
 
     def create_limit_buy(self, symbol: str, price: float, qty: float) -> Optional[dict]:
         qty = self.round_quantity(symbol, qty)

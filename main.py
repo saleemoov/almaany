@@ -43,6 +43,13 @@ def main():
         schedule.every().day.at("00:00").do(monthly_report_wrapper)
         schedule.every(5).minutes.do(strategy.health_check)
 
+        def heartbeat_wrapper():
+            try:
+                telegram.send_heartbeat(strategy.last_scan_summary)
+            except Exception as e:
+                logger.error(f"Heartbeat failed: {e}")
+        schedule.every(6).hours.do(heartbeat_wrapper)
+
         while True:
             schedule.run_pending()
             time.sleep(1)

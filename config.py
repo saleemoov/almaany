@@ -20,7 +20,11 @@ def load_config():
         'COOLDOWN_BARS': int(os.getenv('COOLDOWN_BARS', 8)),
         'MIN_CONFIDENCE': int(os.getenv('MIN_CONFIDENCE', 50)),
         'INITIAL_CAPITAL': float(os.getenv('INITIAL_CAPITAL', 85000)),
-        'WATCHLIST': os.getenv('WATCHLIST', '').split(','),
+        'WATCHLIST': [c.strip() for c in os.getenv(
+            'WATCHLIST',
+            'BTC,ETH,SOL,XRP,ADA,DOGE,LINK,SUI,AVAX,TRX,NEAR,APT,ATOM,FIL,'
+            'BNB,DOT,LTC,BCH,TON,ETC,XLM,HBAR,OP,ARB,TAO'
+        ).split(',') if c.strip()],
         'db_path': os.path.join(os.path.dirname(__file__), 'data', 'elite_v9.db'),
     }
     config['db'] = None  # Placeholder for db connection
