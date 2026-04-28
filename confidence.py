@@ -31,8 +31,8 @@ def calculate_confidence(df: pd.DataFrame) -> Dict[str, float]:
     breakdown['is_bottom'] = int(is_bottom)
     if is_bottom:
         score += 30
-    # Volume (تخفيف من 1.2 إلى 1.1)
-    if volume.iloc[-1] > vol_sma * 1.1:
+    # Volume (يكفي أن يكون عند المتوسط أو أعلى)
+    if volume.iloc[-1] >= vol_sma * 1.0:
         score += 20
         breakdown['volume'] = 1
     else:

@@ -18,7 +18,7 @@ def load_config():
         'MAX_OPEN_POSITIONS': int(os.getenv('MAX_OPEN_POSITIONS', 3)),
         'MAX_DAILY_LOSS_PERCENT': float(os.getenv('MAX_DAILY_LOSS_PERCENT', 5)),
         'COOLDOWN_BARS': int(os.getenv('COOLDOWN_BARS', 8)),
-        'MIN_CONFIDENCE': int(os.getenv('MIN_CONFIDENCE', 85)),
+        'MIN_CONFIDENCE': int(os.getenv('MIN_CONFIDENCE', 50)),
         'INITIAL_CAPITAL': float(os.getenv('INITIAL_CAPITAL', 85000)),
         'WATCHLIST': os.getenv('WATCHLIST', '').split(','),
         'db_path': os.path.join(os.path.dirname(__file__), 'data', 'elite_v9.db'),
