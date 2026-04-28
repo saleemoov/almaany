@@ -20,17 +20,20 @@ class OKXClient:
         self.api_key = config['OKX_API_KEY']
         self.secret = config['OKX_SECRET_KEY']
         self.passphrase = config['OKX_PASSPHRASE']
+        if not self.demo_mode:
+            raise RuntimeError("OKXClient: DEMO MODE ONLY is enforced!")
+        # Use public (no-auth) exchange for loading markets to avoid demo trading restrictions
+        public_exchange = ccxt.okx({'enableRateLimit': True})
+        self.markets = public_exchange.load_markets()
+        self.precision = self._get_precisions()
+        # Authenticated exchange with demo mode enabled via ccxt sandbox
         self.exchange = ccxt.okx({
             'apiKey': self.api_key,
             'secret': self.secret,
             'password': self.passphrase,
             'enableRateLimit': True,
-            'headers': {'x-simulated-trading': '1'},
         })
-        if not self.demo_mode:
-            raise RuntimeError("OKXClient: DEMO MODE ONLY is enforced!")
-        self.markets = self.exchange.load_markets()
-        self.precision = self._get_precisions()
+        self.exchange.set_sandbox_mode(True)
 
     def _get_precisions(self) -> Dict[str, int]:
         # Returns dict: {symbol: decimals}

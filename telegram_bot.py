@@ -88,3 +88,20 @@ class TelegramBot:
     def _now(self):
         from datetime import datetime
         return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+cat > ~/almaany/.env << 'EOF'
+TELEGRAM_BOT_TOKEN=ضع_التوكن_هنا
+TELEGRAM_CHAT_ID=ضع_الشات_آيدي_هنا
+OKX_API_KEY=ضع_المفتاح_هنا
+OKX_SECRET_KEY=ضع_السر_هنا
+OKX_PASSPHRASE=ضع_الباسفريز_هنا
+OKX_DEMO_MODE=true
+POSITION_SIZE_USD=1000
+STOP_LOSS_PERCENT=1.5
+MAX_DAILY_TRADES=4
+MAX_OPEN_POSITIONS=3
+MAX_DAILY_LOSS_PERCENT=5
+COOLDOWN_BARS=8
+MIN_CONFIDENCE=50
+INITIAL_CAPITAL=85000
+WATCHLIST=BTC,ETH,SOL,XRP,ADA,DOGE,LINK,SUI,AVAX,TRX,NEAR,APT,ATOM,FIL,BNB,DOT,LTC,BCH,TON,ETC,XLM,HBAR,OP,ARB,TAO
+EOF
