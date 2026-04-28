@@ -23,7 +23,7 @@ def load_config():
         'WATCHLIST': [c.strip() for c in os.getenv(
             'WATCHLIST',
             'BTC,ETH,SOL,XRP,ADA,DOGE,LINK,SUI,AVAX,TRX,NEAR,APT,ATOM,FIL,'
-            'BNB,DOT,LTC,BCH,TON,ETC,XLM,HBAR,OP,ARB,TAO'
+            'BNB,DOT,LTC,BCH,TON,ETC,XLM,HBAR,OP,ARB,WLD'
         ).split(',') if c.strip()],
         'db_path': os.path.join(os.path.dirname(__file__), 'data', 'elite_v9.db'),
     }

@@ -81,7 +81,10 @@ class TelegramBot:
 
     async def _send(self, msg: str):
         try:
-            await self.bot.send_message(chat_id=self.chat_id, text=msg)
+            # Create a fresh Bot instance each time to avoid stale event loop issues
+            from telegram import Bot
+            async with Bot(token=self.config['TELEGRAM_BOT_TOKEN']) as bot:
+                await bot.send_message(chat_id=self.chat_id, text=msg)
         except Exception as e:
             self.logger.error(f"Telegram send failed: {e}")
 
