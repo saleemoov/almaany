@@ -28,6 +28,10 @@ def main():
         telegram.send_startup_alert()
         logger.info("ELITE V9 Bot started.")
 
+        # Run immediately on startup (don't wait 30 minutes)
+        logger.info("Running initial strategy scan...")
+        strategy.run()
+
         schedule.every(30).minutes.at(":00").do(strategy.run)
         schedule.every().day.at("00:00").do(reports.send_daily_report)
         schedule.every().sunday.at("00:00").do(reports.send_weekly_report)

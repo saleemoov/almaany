@@ -30,52 +30,66 @@ class EliteV9Strategy:
 
     def run(self):
         """Main trading loop: called every 30m on candle close."""
+        from logger import get_logger
+        log = get_logger("strategy")
+        log.info(f"=== Strategy scan started: {len(self.watchlist)} coins ===")
         for coin in self.watchlist:
             symbol = f"{coin}/USDT"
-            # 1. Fetch 30m OHLCV
-            ohlcv = self.okx.get_ohlcv(symbol, '30m', 100)
-            if not ohlcv or len(ohlcv) < 30:
-                continue
-            df = pd.DataFrame(ohlcv, columns=["timestamp","open","high","low","close","volume"])
-            # 2. Fetch HTF for market state
-            ohlcv_4h = self.okx.get_ohlcv(symbol, '4h', 60)
-            ohlcv_1d = self.okx.get_ohlcv(symbol, '1d', 60)
-            if not ohlcv_4h or not ohlcv_1d:
-                continue
-            df_4h = pd.DataFrame(ohlcv_4h, columns=df.columns)
-            df_1d = pd.DataFrame(ohlcv_1d, columns=df.columns)
-            market_state = detect_market_state(df_4h, df_1d)
-            # 3. Calculate confidence
-            conf = calculate_confidence(df)
-            confidence = conf['total']
-            is_bottom = conf.get('is_bottom', 0)
-            # 4. Risk checks (cooldown, open positions, blacklist, etc.)
-            if not self.risk.can_trade(coin, confidence, is_bottom, market_state):
-                continue
-            # 5. Entry logic
-            if confidence >= self.min_confidence:
-                # Place order (demo)
-                entry_price = df['close'].iloc[-1]
-                qty = self.okx.round_quantity(symbol, self.position_size / entry_price)
-                order = self.okx.create_limit_buy(symbol, entry_price, qty)
-                if order:
-                    # Record trade, send alert, update cooldown, etc.
-                    self.db.insert_trade({
-                        'trade_id': f"{datetime.utcnow().strftime('%Y%m%d')}_{coin}_{int(datetime.utcnow().timestamp())}",
-                        'coin': coin,
-                        'entry_price': entry_price,
-                        'entry_time': datetime.utcnow().isoformat(),
-                        'entry_confidence': confidence,
-                        'market_state': market_state,
-                        'quantity': qty,
-                        'position_size_usd': self.position_size,
-                        'status': 'OPEN',
-                        'order_id': order.get('id',''),
-                    })
-                    self.telegram.send_signal_alert(coin, confidence, market_state, entry_price, qty)
-                    self.risk.record_trade(coin)
-            # 6. Exit logic (to be implemented: TP/SL/close)
-            # ...
+            try:
+                # 1. Fetch 30m OHLCV
+                ohlcv = self.okx.get_ohlcv(symbol, '30m', 100)
+                if not ohlcv or len(ohlcv) < 30:
+                    log.warning(f"{coin}: insufficient OHLCV data ({len(ohlcv) if ohlcv else 0} candles)")
+                    continue
+                df = pd.DataFrame(ohlcv, columns=["timestamp","open","high","low","close","volume"])
+                # 2. Fetch HTF for market state
+                ohlcv_4h = self.okx.get_ohlcv(symbol, '4h', 60)
+                ohlcv_1d = self.okx.get_ohlcv(symbol, '1d', 60)
+                if not ohlcv_4h or not ohlcv_1d:
+                    log.warning(f"{coin}: failed to fetch 4h/1d data")
+                    continue
+                df_4h = pd.DataFrame(ohlcv_4h, columns=df.columns)
+                df_1d = pd.DataFrame(ohlcv_1d, columns=df.columns)
+                market_state = detect_market_state(df_4h, df_1d)
+                # 3. Calculate confidence
+                conf = calculate_confidence(df)
+                confidence = conf['total']
+                is_bottom = conf.get('is_bottom', 0)
+                log.info(f"{coin}: confidence={confidence} market={market_state} is_bottom={is_bottom} breakdown={conf}")
+                # 4. Risk checks (cooldown, open positions, blacklist, etc.)
+                if not self.risk.can_trade(coin, confidence, is_bottom, market_state):
+                    log.info(f"{coin}: SKIPPED by risk manager (conf={confidence}, state={market_state})")
+                    continue
+                # 5. Entry logic
+                if confidence >= self.min_confidence:
+                    # Place order (demo)
+                    entry_price = df['close'].iloc[-1]
+                    qty = self.okx.round_quantity(symbol, self.position_size / entry_price)
+                    order = self.okx.create_limit_buy(symbol, entry_price, qty)
+                    if order:
+                        # Record trade, send alert, update cooldown, etc.
+                        self.db.insert_trade({
+                            'trade_id': f"{datetime.utcnow().strftime('%Y%m%d')}_{coin}_{int(datetime.utcnow().timestamp())}",
+                            'coin': coin,
+                            'entry_price': entry_price,
+                            'entry_time': datetime.utcnow().isoformat(),
+                            'entry_confidence': confidence,
+                            'market_state': market_state,
+                            'quantity': qty,
+                            'position_size_usd': self.position_size,
+                            'status': 'OPEN',
+                            'order_id': order.get('id',''),
+                        })
+                        self.telegram.send_signal_alert(coin, confidence, market_state, entry_price, qty)
+                        self.risk.record_trade(coin)
+                        log.info(f"{coin}: ORDER PLACED at {entry_price} qty={qty}")
+                    else:
+                        log.error(f"{coin}: order placement FAILED")
+                # 6. Exit logic (to be implemented: TP/SL/close)
+                # ...
+            except Exception as e:
+                log.error(f"{coin}: EXCEPTION in strategy loop: {e}", exc_info=True)
+        log.info("=== Strategy scan complete ===")
 
     def health_check(self):
         # Health check logic (to be implemented)
