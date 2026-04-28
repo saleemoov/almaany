@@ -100,7 +100,7 @@ class EliteV9Strategy:
                         })
                         self.telegram.send_signal_alert(coin, confidence, market_state, entry_price, qty)
                         self.risk.record_trade(coin)
-                        log.info(f"{coin}: ORDER PLACED at {entry_price} qty={qty}")
+                        log.info(f"{coin}: ORDER PLACED at {entry_price} qty={qty} order_id={order.get('id','?')} status={order.get('status','?')}")
                     else:
                         log.error(f"{coin}: order placement FAILED")
                 # 6. Exit logic (to be implemented: TP/SL/close)
