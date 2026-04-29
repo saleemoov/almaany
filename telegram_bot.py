@@ -31,12 +31,28 @@ class TelegramBot:
         asyncio.run(self._send(msg))
 
     def send_tp_alert(self, coin, tp_label, price, profit):
-        msg = f"🎯 {tp_label} ACHIEVED! 🎯\n📈 COIN: #{coin}/USDT\n💰 Exit: ${price:.2f}\n📊 Profit: +${profit:.2f}"
+        msg = (f"✅ TAKE PROFIT ACHIEVED! ✅\n"
+               f"📈 COIN: #{coin}/USDT\n"
+               f"💰 Exit: ${price:.4f}\n"
+               f"📊 Profit: +${profit:.2f} (+2%)\n"
+               f"🏆 Result: WIN")
         import asyncio
         asyncio.run(self._send(msg))
 
     def send_sl_alert(self, coin, price, loss, losses):
-        msg = f"🛑 STOP LOSS TRIGGERED 🛑\n📉 COIN: #{coin}/USDT\n💰 Exit: ${price:.2f}\n📊 Loss: -${loss:.2f}\n⚠️ Consecutive losses: {losses}/3"
+        msg = (f"🛑 STOP LOSS TRIGGERED 🛑\n"
+               f"📉 COIN: #{coin}/USDT\n"
+               f"💰 Exit: ${price:.4f}\n"
+               f"📊 Loss: -${abs(loss):.2f} (-2%)\n"
+               f"⚠️ Consecutive losses: {losses}/3")
+        import asyncio
+        asyncio.run(self._send(msg))
+
+    def send_breakeven_alert(self, coin, entry_price):
+        msg = (f"🛡️ BREAKEVEN ACTIVATED\n"
+               f"📈 COIN: #{coin}/USDT\n"
+               f"🔒 SL moved to entry: ${entry_price:.4f}\n"
+               f"✅ Position now risk-free!")
         import asyncio
         asyncio.run(self._send(msg))
 

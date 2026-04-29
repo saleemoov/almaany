@@ -39,9 +39,67 @@ class EliteV9Strategy:
         summary = {'bull': 0, 'bear': 0, 'sideways': 0,
                    'best_coin': '-', 'best_confidence': 0,
                    'total_scanned': 0}
+
+        # ── EXIT LOGIC: check all open positions first ──────────────────────
+        try:
+            open_trades = self.db.get_open_trades()
+            for trade in open_trades:
+                coin       = trade['coin']
+                symbol     = f"{coin}/USDT"
+                entry      = float(trade['entry_price'])
+                qty        = float(trade['quantity'])
+                trade_id   = trade['trade_id']
+                sl_price   = float(trade['stop_loss_price'])  # dynamic SL (moves to breakeven)
+                try:
+                    ticker = self.okx.get_ticker(symbol)
+                    if not ticker:
+                        continue
+                    current = float(ticker['last'])
+                    tp_price = entry * 1.02       # +2%
+                    be_price = entry * 1.015      # +1.5% → breakeven trigger
+                    initial_sl = entry * 0.98     # -2%
+
+                    # 1. TAKE PROFIT
+                    if current >= tp_price:
+                        order = self.okx.create_limit_sell(symbol, current, qty)
+                        if order:
+                            self.db.close_trade(trade_id, current, 'TP')
+                            profit = (current - entry) * qty
+                            self.telegram.send_tp_alert(coin, 'TP +2%', current, profit)
+                            self.risk.record_exit(coin, profit, was_loss=False)
+                            log.info(f"{coin}: TP HIT at {current} profit=${profit:.2f}")
+
+                    # 2. STOP LOSS (uses dynamic SL which may be at entry after breakeven)
+                    elif current <= sl_price:
+                        order = self.okx.create_limit_sell(symbol, current, qty)
+                        if order:
+                            self.db.close_trade(trade_id, current, 'SL')
+                            loss = (current - entry) * qty
+                            losses = self.db.get_consecutive_losses(coin)
+                            self.telegram.send_sl_alert(coin, current, loss, losses)
+                            self.risk.record_exit(coin, loss, was_loss=(loss < 0))
+                            log.info(f"{coin}: SL HIT at {current} loss=${loss:.2f}")
+
+                    # 3. BREAKEVEN: move SL to entry when up 1.5%
+                    elif current >= be_price and abs(sl_price - initial_sl) < 0.000001:
+                        self.db.update_stop_loss(trade_id, entry)
+                        self.telegram.send_breakeven_alert(coin, entry)
+                        log.info(f"{coin}: BREAKEVEN activated, SL moved to {entry}")
+
+                except Exception as e:
+                    log.error(f"{coin}: EXCEPTION in exit check: {e}", exc_info=True)
+        except Exception as e:
+            log.error(f"Exit loop EXCEPTION: {e}", exc_info=True)
+
+        # ── ENTRY LOGIC: scan for new signals ───────────────────────────────
         for coin in self.watchlist:
             symbol = f"{coin}/USDT"
             try:
+                # Duplicate protection: skip if already open
+                if self.db.is_coin_open(coin):
+                    log.info(f"⚠️ {coin} already has open position - SKIPPED")
+                    continue
+
                 # 1. Fetch 30m OHLCV
                 ohlcv = self.okx.get_ohlcv(symbol, '30m', 100)
                 if not ohlcv or len(ohlcv) < 30:
@@ -74,18 +132,17 @@ class EliteV9Strategy:
                 if confidence > summary['best_confidence']:
                     summary['best_confidence'] = confidence
                     summary['best_coin'] = coin
-                # 4. Risk checks (cooldown, open positions, blacklist, etc.)
+                # 4. Risk checks
                 if not self.risk.can_trade(coin, confidence, is_bottom, market_state):
                     log.info(f"{coin}: SKIPPED by risk manager (conf={confidence}, state={market_state})")
                     continue
                 # 5. Entry logic
                 if confidence >= self.min_confidence:
-                    # Place order (demo)
                     entry_price = df['close'].iloc[-1]
                     qty = self.okx.round_quantity(symbol, self.position_size / entry_price)
                     order = self.okx.create_limit_buy(symbol, entry_price, qty)
                     if order:
-                        # Record trade, send alert, update cooldown, etc.
+                        sl_price = round(entry_price * 0.98, 8)
                         self.db.insert_trade({
                             'trade_id': f"{datetime.utcnow().strftime('%Y%m%d')}_{coin}_{int(datetime.utcnow().timestamp())}",
                             'coin': coin,
@@ -97,16 +154,16 @@ class EliteV9Strategy:
                             'position_size_usd': self.position_size,
                             'status': 'OPEN',
                             'order_id': order.get('id',''),
+                            'stop_loss_price': sl_price,
                         })
                         self.telegram.send_signal_alert(coin, confidence, market_state, entry_price, qty)
                         self.risk.record_trade(coin)
-                        log.info(f"{coin}: ORDER PLACED at {entry_price} qty={qty} order_id={order.get('id','?')} status={order.get('status','?')}")
+                        log.info(f"{coin}: ORDER PLACED at {entry_price} qty={qty} SL={sl_price} order_id={order.get('id','?')}")
                     else:
                         log.error(f"{coin}: order placement FAILED")
-                # 6. Exit logic (to be implemented: TP/SL/close)
-                # ...
             except Exception as e:
-                log.error(f"{coin}: EXCEPTION in strategy loop: {e}", exc_info=True)
+                log.error(f"{coin}: EXCEPTION in entry loop: {e}", exc_info=True)
+
         self.last_scan_summary = summary
         log.info(f"=== Strategy scan complete: bull={summary['bull']} bear={summary['bear']} side={summary['sideways']} best={summary['best_coin']}({summary['best_confidence']}) ===")
 
