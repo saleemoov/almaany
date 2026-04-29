@@ -71,6 +71,15 @@ class OKXClient:
             self.logger.error(f"Balance fetch failed: {e}")
             return 0.0
 
+    def get_coin_balance(self, coin: str) -> float:
+        """Returns actual available balance of a coin in Demo account."""
+        try:
+            balance = self.exchange.fetch_balance()
+            return float(balance['free'].get(coin, 0))
+        except Exception as e:
+            self.logger.warning(f"Coin balance fetch failed ({coin}): {e}")
+            return 0.0
+
     def round_quantity(self, symbol: str, qty: float) -> float:
         # Rounds to OKX min precision for the symbol.
         # OKX returns precision as float e.g. 1e-08, so we convert to decimal places.
@@ -85,27 +94,29 @@ class OKXClient:
         return round(qty, decimals)
 
     def create_limit_buy(self, symbol: str, price: float, qty: float) -> Optional[dict]:
+        """Places a MARKET buy order (ignores price) to ensure immediate fill in Demo."""
         qty = self.round_quantity(symbol, qty)
         for attempt in range(3):
             try:
-                order = self.exchange.create_limit_buy_order(symbol, qty, price)
+                order = self.exchange.create_market_buy_order(symbol, qty)
                 return order
             except Exception as e:
-                self.logger.warning(f"Limit buy failed ({symbol}): {e}")
+                self.logger.warning(f"Market buy failed ({symbol}): {e}")
                 time.sleep(5)
-        self.logger.error(f"Failed to place limit buy for {symbol} after 3 attempts.")
+        self.logger.error(f"Failed to place market buy for {symbol} after 3 attempts.")
         return None
 
     def create_limit_sell(self, symbol: str, price: float, qty: float) -> Optional[dict]:
+        """Places a MARKET sell order to ensure immediate fill in Demo."""
         qty = self.round_quantity(symbol, qty)
         for attempt in range(3):
             try:
-                order = self.exchange.create_limit_sell_order(symbol, qty, price)
+                order = self.exchange.create_market_sell_order(symbol, qty)
                 return order
             except Exception as e:
-                self.logger.warning(f"Limit sell failed ({symbol}): {e}")
+                self.logger.warning(f"Market sell failed ({symbol}): {e}")
                 time.sleep(5)
-        self.logger.error(f"Failed to place limit sell for {symbol} after 3 attempts.")
+        self.logger.error(f"Failed to place market sell for {symbol} after 3 attempts.")
         return None
 
     def cancel_order(self, order_id: str, symbol: str) -> bool:

@@ -55,26 +55,38 @@ class EliteV9Strategy:
                     if not ticker:
                         continue
                     current = float(ticker['last'])
+
+                    # Check actual coin balance before attempting any sell
+                    actual_balance = self.okx.get_coin_balance(coin)
+                    if actual_balance < qty * 0.01:
+                        # Buy order was never filled - clean up DB and skip
+                        log.warning(f"{coin}: buy order not filled (balance={actual_balance}), marking CANCELLED")
+                        self.db.close_trade(trade_id, 0, 'NOT_FILLED')
+                        self.risk.record_exit(coin, 0, was_loss=False)
+                        continue
+                    # Use actual balance for selling (may differ slightly from recorded qty)
+                    sell_qty = self.okx.round_quantity(symbol, actual_balance)
+
                     tp_price = entry * 1.02       # +2%
                     be_price = entry * 1.015      # +1.5% → breakeven trigger
                     initial_sl = entry * 0.98     # -2%
 
                     # 1. TAKE PROFIT
                     if current >= tp_price:
-                        order = self.okx.create_limit_sell(symbol, current, qty)
+                        order = self.okx.create_limit_sell(symbol, current, sell_qty)
                         if order:
                             self.db.close_trade(trade_id, current, 'TP')
-                            profit = (current - entry) * qty
+                            profit = (current - entry) * sell_qty
                             self.telegram.send_tp_alert(coin, 'TP +2%', current, profit)
                             self.risk.record_exit(coin, profit, was_loss=False)
                             log.info(f"{coin}: TP HIT at {current} profit=${profit:.2f}")
 
                     # 2. STOP LOSS (uses dynamic SL which may be at entry after breakeven)
                     elif current <= sl_price:
-                        order = self.okx.create_limit_sell(symbol, current, qty)
+                        order = self.okx.create_limit_sell(symbol, current, sell_qty)
                         if order:
                             self.db.close_trade(trade_id, current, 'SL')
-                            loss = (current - entry) * qty
+                            loss = (current - entry) * sell_qty
                             losses = self.db.get_consecutive_losses(coin)
                             self.telegram.send_sl_alert(coin, current, loss, losses)
                             self.risk.record_exit(coin, loss, was_loss=(loss < 0))
